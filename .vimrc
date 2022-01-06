@@ -30,6 +30,7 @@ imap ZZ <esc>ZZ
 " Insert all content needed for colorful shell script output
 imap //colors 
 	\# Terminal output control (http://www.termsys.demon.co.uk/vtansi.htm) <CR>
+  \# Taken from https://gist.github.com/bcap/5682077#file-terminal-control-sh <CR>
 	\TC='\e[' <CR>
   \<CR>
 	\CLR_LINE_START="${TC}1K" <CR>
