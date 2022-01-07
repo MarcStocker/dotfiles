@@ -55,7 +55,6 @@ startContainer() {
 removeContainer() {
         eprint "Removing container ${NOCOLOR}'${GRAY}$1${NOCOLOR}'"
         $(cd ${dockerFolder}/$1/; docker-compose down;)
-        eprint "Next"
 				eprint "Pruning Images"
         $(docker image prune -f &>/dev/null)
 				eprint "Pruning Volumes"
