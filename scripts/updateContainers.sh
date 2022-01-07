@@ -1,6 +1,3 @@
-##########################################################
-### Description:
-###		Script will display all Docker Containers based off
 ###		a folder containing folders of docker-compose.yml
 ###		files.
 ###	
@@ -27,7 +24,11 @@ FIRE="\U1F525"
 # Variables
 # ----------------------------------
 prefix="${GRAY}[ ${CYAN}Update Container ${GRAY}]${NOCOLOR}"
-dockerFolder="/mnt/ServerBackup/docker/compose"
+
+rokianDockerFolder="/mnt/ServerBackup/docker/compose"
+HADockerFolder="/docker/compose"
+if [[ -d $rokianDockerFolder ]]; then dockerFolder=$rokianDockerFolder; fi
+if [[ -d $HADockerFolder ]]; then dockerFolder=$HADockerFolder; fi
 # ----------------------------------
 
 eprint() {
@@ -68,13 +69,20 @@ recreateContainer() {
 }
 
 prompt() {
-	allContainers=($(ls -d ${dockerFolder}/*))
+	allContainers=($(ls -1 ${dockerFolder}))
+	declare -a removeNonContainers
+
 
 	eprint "${PURPLE}Which container would you like to upgrade the image for?${NOCOLOR}"
 	numSelect=0
 	for i in ${!allContainers[@]}; do
+		container=${allContainers[i]}
+		if [[ -e "${dockerFolder}/${container}/docker-compose.yml" ]]; then echo -n
+		else
+			continue
+		fi
+		removeNonContainers+=("${container}")
 		numSelect=$(( $numSelect +1 ))
-		container=${allContainers[i]:33}
 		
 		isRunning=`docker ps | grep ${container}`
 		if [[ $? -eq 1 ]]; then
@@ -84,10 +92,15 @@ prompt() {
 		fi
 
 	done
+	# Remove all options that are not containers
+	unset allContainers[@]
+	allContainers=("${removeNonContainers[@]}")
 
 	echo -en "${prefix} Select: ${GREEN}"
 	read USERCHOICE
 	echo -en "${NOCOLOR}"
+	USERCHOICE=$(( $USERCHOICE -1 ))
+	eprint "You choose: ${cyan}${allContainers[$USERCHOICE]}"
   
 }
 
@@ -106,7 +119,6 @@ while true; do
 				sleep .75
 				continue
 			fi
-			USERCHOICE=$(( $USERCHOICE -1 ))
 			break
 			;;
 		* )
@@ -117,10 +129,11 @@ while true; do
 			;;
 	esac
 done
-
-stopContainer ${allContainers[$USERCHOICE]:33}
-removeContainer ${allContainers[$USERCHOICE]:33}
-recreateContainer ${allContainers[$USERCHOICE]:33}
+eprint "You selected the container: ${allContainers[$USERCHOICE]}"
+exit
+stopContainer ${allContainers[$USERCHOICE]}
+removeContainer ${allContainers[$USERCHOICE]}
+recreateContainer ${allContainers[$USERCHOICE]}
 
 
 #eprint "${PURPLE}------------------------------------"
