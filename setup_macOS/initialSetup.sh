@@ -128,17 +128,15 @@ if yesNo; then
   installCask iterm2
 fi
 
-
-echo
 echo
 
 echo -e "${Rst}${BOLD}Import dotfiles?${Rst}"
+echo -en "${Yellow}"
+echo -e " - .vimrc"
+echo -e " - .bashrc"
 if yesNo; then
-  echo -e "${Cyan}${Undr}Time to import some dotfiles.${Rst}"
   importFile .vimrc ../ ~/
   importFile .bashrc ../ ~/
-else
-  echo -e "${Rst}${Bold}${Yellow}Skipping .vimrc${Rst}"
 fi
 
 
