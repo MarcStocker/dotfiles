@@ -57,9 +57,9 @@ removeContainer() {
         $(cd ${dockerFolder}/$1/; docker-compose down;)
         eprint "Next"
 				eprint "Pruning Images"
-        $(docker image prune -f)
+        $(docker image prune -f &>/dev/null)
 				eprint "Pruning Volumes"
-        $(docker volume prune -f)
+        $(docker volume prune -f &>/dev/null)
 }
 
 recreateContainer() {
@@ -100,7 +100,6 @@ prompt() {
 	read USERCHOICE
 	echo -en "${NOCOLOR}"
 	USERCHOICE=$(( $USERCHOICE -1 ))
-	eprint "You choose: ${cyan}${allContainers[$USERCHOICE]}"
   
 }
 
@@ -129,8 +128,7 @@ while true; do
 			;;
 	esac
 done
-eprint "You selected the container: ${allContainers[$USERCHOICE]}"
-exit
+
 stopContainer ${allContainers[$USERCHOICE]}
 removeContainer ${allContainers[$USERCHOICE]}
 recreateContainer ${allContainers[$USERCHOICE]}
