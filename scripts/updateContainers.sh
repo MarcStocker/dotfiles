@@ -12,7 +12,7 @@
 ###	  MUST be the exact name of the docker container
 ##########################################################
 
-source /home/roki/Documents/shellTextVariables.sh
+source ~/dotfiles/scripts/shellTextVariables.sh
 # ----------------------------------
 # Symbols
 # ----------------------------------
