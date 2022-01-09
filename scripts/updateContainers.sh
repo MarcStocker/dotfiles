@@ -1,3 +1,6 @@
+##########################################################
+### Description:
+###		Script will display all Docker Containers based off
 ###		a folder containing folders of docker-compose.yml
 ###		files.
 ###	
@@ -96,15 +99,16 @@ prompt() {
 	allContainers=("${removeNonContainers[@]}")
 
 	echo -en "${prefix} Select: ${GREEN}"
-	read USERCHOICE
+	read -r USERCHOICE
 	echo -en "${NOCOLOR}"
 	USERCHOICE=$(( $USERCHOICE -1 ))
   
 }
 
 
+prompt
+
 while true; do
-	prompt
 	case $USERCHOICE in 
 		x | X | q | Q | exit)
 			eprint "Exiting..."
@@ -112,17 +116,37 @@ while true; do
 			;;
 		[0-9]* )
 			if [[ $USERCHOICE -gt ${#allContainers[@]} ]]; then
-				echo -en "\033[1A"
-				eprint "${ORANGE}Please select a valid choice${NOCOLOR}"
-				sleep .75
+				#echo -en "\033[1A"
+				#eprint "${ORANGE}Please select a valid choice${NOCOLOR}"
+				#sleep .75
+				#continue
+
+				echo -en "${prefix} ${ORANGE}Please select a valid choice${NOCOLOR}"
+				sleep .75 
+        echo -en "${RESET_LINE}" 	# Clear text to end of line
+				echo -en "${CURSORUP}"
+				echo -en "${CLR_LINE_END}"
+
+        echo -en "${prefix} Select: ${GREEN}"
+        read USERCHOICE
+        echo -en "${NOCOLOR}"
+        USERCHOICE=$(( $USERCHOICE -1 ))
 				continue
+
 			fi
 			break
 			;;
 		* )
-			echo -en "\033[1A"
-			eprint "${ORANGE}Please select a valid choice${NOCOLOR}"
-			sleep .75
+      echo -en "${prefix} ${ORANGE}Please select a valid choice${NOCOLOR}"
+      sleep .75 
+      echo -en "${RESET_LINE}" 	# Clear text to end of line
+      echo -en "${CURSORUP}"
+      echo -en "${CLR_LINE_END}"
+
+      echo -en "${prefix} Select: ${GREEN}"
+      read USERCHOICE
+      echo -en "${NOCOLOR}"
+      USERCHOICE=$(( $USERCHOICE -1 ))
 			continue
 			;;
 	esac
