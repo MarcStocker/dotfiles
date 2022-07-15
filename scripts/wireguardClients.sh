@@ -3,8 +3,8 @@
 ###		Script will display all Wireguard clients based off
 ###		the wireguard config folder.
 ###	
-###	File structure script will work with:
-###		/FolderToPointTo/nameOfClient/client.conf
+###		File structure script will work with:
+###			/FolderToPointTo/nameOfClient/client.conf
 ##########################################################
 
 source ~/dotfiles/scripts/shellTextVariables.sh
@@ -25,9 +25,9 @@ prefix="${GRAY}[ ${CYAN}Wireguard Clients ${GRAY}]${NOCOLOR}"
 
 # For multiple systems, determine which folder exists and use that one 
 RokianClientFolder="/mnt/ServerBackup/docker/storage/wireguard/config"
-HAClientFolder="/docker/compose"
+otherClients="/docker/storage/wireguard/config"
 if [[ -d $RokianClientFolder ]]; then clientFolder=$RokianClientFolder; fi
-if [[ -d $HAClientFolder ]]; then clientFolder=$HADockerFolder; fi
+if [[ -d $otherClients ]]; then clientFolder=$HADockerFolder; fi
 # ----------------------------------
 
 eprint() {
@@ -111,11 +111,12 @@ done
 echo -e "${PURPLE}==================================================================${NOCOLOR}"
 echo -e "${PURPLE}======================== Config Output ===========================${NOCOLOR}"
 echo -e "${PURPLE}==================================================================${NOCOLOR}"
-echo "cat /mnt/ServerBackup/docker/storage/wireguard/config/peer_${wireguardClients[$USERCHOICE]:55}/peer_${wireguardClients[$USERCHOICE]:55}.conf"
+cat ${clientFolder}/${allClients[$USERCHOICE]}/${allClients[$USERCHOICE]}.conf
 echo -e "${PURPLE}==================================================================${NOCOLOR}"
 echo -e "${PURPLE}======================= QR Code  Output ==========================${NOCOLOR}"
+echo -e "${PURPLE}=============== qrencode -t ansiutf8 < {FILENAME} ================${NOCOLOR}"
 echo -e "${PURPLE}==================================================================${NOCOLOR}"
-echo "qrencode -t ansiutf8 < /mnt/ServerBackup/docker/storage/wireguard/config/peer_${wireguardClients[$USERCHOICE]:55}/peer_${wireguardClients[$USERCHOICE]}.conf"
+qrencode -t ansiutf8 < ${clientFolder}/${allClients[$USERCHOICE]}/${allClients[$USERCHOICE]}.conf
 echo -e "${PURPLE}==================================================================${NOCOLOR}"
 
 
