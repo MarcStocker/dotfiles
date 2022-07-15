@@ -1,3 +1,6 @@
+##########################################################
+### Description:
+###		Script will display all Docker Containers based off
 ###		a folder containing folders of docker-compose.yml
 ###		files.
 ###	
@@ -33,6 +36,12 @@ if [[ -d $HADockerFolder ]]; then dockerFolder=$HADockerFolder; fi
 
 eprint() {
   echo -e "${GRAY}[ ${CYAN}Update Container ${GRAY}]${NOCOLOR} $1"
+}
+lprint() {
+  echo -en "${GRAY}[ ${CYAN}Update Container ${GRAY}]${NOCOLOR} $1"
+}
+rprint() {
+  echo -e "\t\t${NOCOLOR} $1"
 }
 stopContainer() {
         response=$(docker stop $1)
@@ -71,8 +80,8 @@ prompt() {
 	allContainers=($(ls -1 ${dockerFolder}))
 	declare -a removeNonContainers
 
-
 	eprint "${PURPLE}Which container would you like to upgrade the image for?${NOCOLOR}"
+	printContainers=""
 	numSelect=0
 	for i in ${!allContainers[@]}; do
 		container=${allContainers[i]}
@@ -81,19 +90,69 @@ prompt() {
 			continue
 		fi
 		removeNonContainers+=("${container}")
-		numSelect=$(( $numSelect +1 ))
+		numSelect=$(( $numSelect + 1 ))
 		
 		isRunning=`docker ps | grep ${container}`
-		if [[ $? -eq 1 ]]; then
-			eprint "${RED}${numSelect}. ${NOCOLOR}${container}"
+		isRunning=$?
+		rem=$(($numSelect % 2))
+		tputRED=$(tput setaf 1)
+		tputGREEN=$(tput setaf 2)
+		tputnormal=$(tput sgr0)
+		if [[ $isRunning -eq 1 ]]; then
+			printf "%-4s %-19s \n" "${tputRED}${numSelect}." "${tputnormal}${container}"
 		else
-			eprint "${GREEN}${numSelect}. ${NOCOLOR}${container}"
+			printf "%-4s %-19s \n" "${tputGREEN}${numSelect}." "${tputnormal}${container}"
 		fi
+		#if [[ $rem -eq 1 ]]; then
+		#	if [[ $isRunning -eq 1 ]]; then
+		#		#printf "%-15s\n" "${tputRED}${numSelect}. ${tputnormal}${container}"
+		#		lprint "${RED}${numSelect}. ${NOCOLOR}${container}"
+		#		#printContainers+=("${RED}${numSelect}. ${NOCOLOR}${container}")
+		#		#printContainers+=("${numSelect}. ${container}")
+		#	else
+		#		#printf "%-15s\n" "${tputGREEN}${numSelect}. ${tputnormal}${container}"
+		#		lprint "${GREEN}${numSelect}. ${NOCOLOR}${container}"
+		#		#printContainers+=("${GREEN}${numSelect}. ${NOCOLOR}${container}")
+		#		#printContainers+=("${numSelect}. ${container}")
+		#	fi
+		#else
+		#	if [[ $isRunning -eq 1 ]]; then
+		#		#printf "%-15s\n" "${tputRED}${numSelect}. ${tputnormal}${container}"
+		#		rprint "${RED}${numSelect}. ${NOCOLOR}${container}"
+		#		#printContainers+=("${RED}${numSelect}. ${NOCOLOR}${container}")
+		#		#printContainers+=("${numSelect}. ${container}")
+		#	else
+		#		#printf "%-15s\n" "${tputGREEN}${numSelect}. ${tputnormal}${container}"
+		#		rprint "${GREEN}${numSelect}. ${NOCOLOR}${container}"
+		#		#printContainers+=("${GREEN}${numSelect}. ${NOCOLOR}${container}")
+		#		#printContainers+=("${numSelect}. ${container}")
+		#	fi
+		#fi 
+	done | column 
+	for i in ${!allContainers[@]}; do
+		container=${allContainers[i]}
+		if [[ -e "${dockerFolder}/${container}/docker-compose.yml" ]]; then echo -n
+		else
+			continue
+		fi
+		removeNonContainers+=("${container}")
+	done #| column 
 
-	done
+
+
+#	echo "------BEFORE--------"
+#	for value in "${removeNonContainers[@]}"; do 
+#		echo -e "$value"
+#	done
+
 	# Remove all options that are not containers
 	unset allContainers[@]
 	allContainers=("${removeNonContainers[@]}")
+
+#	echo "------AFTER--------"
+#	for value in "${allContainers[@]}"; do 
+#		echo -e "$value"
+#	done
 
 	echo -en "${prefix} Select: ${GREEN}"
 	read USERCHOICE
@@ -113,7 +172,7 @@ while true; do
 		[0-9]* )
 			if [[ $USERCHOICE -gt ${#allContainers[@]} ]]; then
 				echo -en "\033[1A"
-				eprint "${ORANGE}Please select a valid choice${NOCOLOR}"
+				eprint "${ORANGE}Please select a valid choice${NOCOLOR}. You chose '$USERCHOICE'"
 				sleep .75
 				continue
 			fi
