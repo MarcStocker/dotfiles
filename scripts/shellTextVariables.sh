@@ -41,6 +41,7 @@ CURSORLOAD='\033[u'
 LOADCURSOR='\033[u'
 CURSORLEFT='\033[1D'
 CURSORRIGHT='\033[s'
+CURSORUP='\033[1A'
 #------------------------------------
 CLEARSCREEN='\033[2J'
 CLEARSCRN='\033[2J'
@@ -53,7 +54,7 @@ ERASELINE='\033[K'
 
 # Terminal output control (http://www.termsys.demon.co.uk/vtansi.htm)
 
-TC='\e['
+TC='\033['
 
 CLR_LINE_START="${TC}1K"
 CLR_LINE_END="${TC}K"

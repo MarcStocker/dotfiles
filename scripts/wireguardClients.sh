@@ -62,7 +62,7 @@ prompt() {
 		rem=$(($numSelect % 2))
 		tputGREEN=$(tput setaf 2)
 		tputnormal=$(tput sgr0)
-		printf "%-4s %-19s \n" "${tputGREEN}${numSelect}." "${tputnormal}${client:5}"
+		printf "%-4s %-19s \n" "${tputGREEN}${numSelect}." "${tputnormal}${client}"
 	done | column 
 
 	for i in ${!allClients[@]}; do
