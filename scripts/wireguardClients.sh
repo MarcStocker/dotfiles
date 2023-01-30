@@ -27,7 +27,7 @@ prefix="${GRAY}[ ${CYAN}Wireguard Clients ${GRAY}]${NOCOLOR}"
 RokianClientFolder="/mnt/ServerBackup/docker/storage/wireguard/config"
 otherClients="/docker/storage/wireguard/config"
 if [[ -d $RokianClientFolder ]]; then clientFolder=$RokianClientFolder; fi
-if [[ -d $otherClients ]]; then clientFolder=$HADockerFolder; fi
+if [[ -d $otherClients ]]; then clientFolder=$otherClients; fi
 # ----------------------------------
 
 eprint() {
