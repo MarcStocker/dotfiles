@@ -43,6 +43,89 @@ lprint() {
 rprint() {
   echo -e "\t\t${NOCOLOR} $1"
 }
+runContainerRebuild() {
+	if [[ ${allContainers[$1]} == "gluetun" ]]; then echo -n
+		eprint "GLUETUN SELECTED: Rebuilding all Services using network mode 'container:gluetun'"
+
+		lprint
+		echo -e "${PURPLE}Do you wish to rebuild and start up STOPPED CONTAINERS as well?${NOCOLOR}"
+		lprint
+		echo -en "Yes/No: ${GREEN}"
+		read -r USERCHOICE
+		echo -en "${NOCOLOR}"
+
+		eprint "==== REBUILDING GLUETUN ===="
+		stopContainer ${allContainers[$1]}
+		removeContainer ${allContainers[$1]}
+		recreateContainer ${allContainers[$1]}
+		
+
+		if [[ $USERCHOICE == "yes" || $USERCHOICE == "y" ]]; then
+			rebuildAll=TRUE
+		else
+			rebuildAll=FALSE
+		fi
+
+
+		vpnDockers=("frigate" "prowlarr" "qbittorrent" "overseerr" "sonarr" "radarr" "lidarr" "bazarr")
+		for i in ${!vpnDockers[@]}; do
+			container=${vpnDockers[i]}
+			echo "Rebuilding ${container}"
+			isRunning=`docker ps | grep ${container}`
+			isRunning=$?
+			if [[ $isRunning -eq 1 ]]; then echo -n # Only rebuild if currently running
+				#echo "--------- It's not running ----------"
+				if [[ $rebuildAll == "TRUE" ]]; then
+					eprint "==== REBUILDING $container ===="
+					stopContainer $container
+					removeContainer $container
+					recreateContainer $container
+					eprint "==== $container COMPLETE ===="
+					echo
+				fi
+			else
+				#echo "--------- It's running ----------"
+				eprint "==== REBUILDING $container ===="
+				stopContainer $container
+				removeContainer $container
+				recreateContainer $container
+				eprint "==== $container COMPLETE ===="
+				echo
+			fi
+		done
+		# Double check to make sure everything is running properly. 
+		vpnDocker+=("gluetun")
+		for i in ${!vpnDockers[@]}; do
+			container=${vpnDockers[i]}
+			isRunning=`docker ps | grep ${container}`
+			isRunning=$?
+			if [[ $isRunning -eq 1 ]]; then echo -n # Only rebuild if currently running
+				lprint
+				echo -e "${RED}=== $container is not running ===${NOCOLOR}"
+			else
+				lprint
+				echo -e "${GREEN}=== $container is running ===${NOCOLOR}"
+			fi
+		done
+		exit
+	else
+		stopContainer ${allContainers[$1]}
+		removeContainer ${allContainers[$1]}
+		recreateContainer ${allContainers[$1]}
+	fi
+
+
+	sleep 1.5
+	# Double Check to make sure the container is running again. 
+
+	isRunning=`docker ps | grep ${container}`
+	isRunning=$?
+	if [[ $isRunning -eq 1 ]]; then echo -n
+	else
+		echo "Container still is not running, reattempting to rebuild/update"
+		runContainerRebuild ${$1}
+	fi
+}
 stopContainer() {
         response=$(docker stop $1)
         #if [[ $reponse != "$1" ]]; then
@@ -53,8 +136,8 @@ stopContainer() {
 startContainer() {
         #eprint "Starting container ${NOCOLOR}'${GRAY}$1${NOCOLOR}'"
         #response=$(docker start $1)
-  eprint "Recreating container '${GREY}$1${NOCOLOR}'"
-        $(cd ${dockerFolder}/$1/; docker-compose pull;)
+  #eprint "Recreating container '${GREY}$1${NOCOLOR}'"
+        #$(cd ${dockerFolder}/$1/; docker-compose pull;)
         $(cd ${dockerFolder}/$1/; docker-compose up -d;)
         #if [[ $reponse != "$1" ]]; then
                 #eprint "${RED}ERROR:${NOCOLOR} Something went wrong"
@@ -77,58 +160,49 @@ recreateContainer() {
 }
 
 prompt() {
+  eprint "${PURPLE}What action would you like to perform on your Docker Containers?${NOCOLOR}"
+
+	eprint "1. Upgrade Container"
+	eprint "2. Start Container"
+	eprint "3. Restart Container"
+	eprint "4. Stop Container"
+	eprint "5. Remove Container"
+	eprint "E. Abort"
+
+	echo
+	echo -en "${prefix} Select: ${GREEN}"
+	read -r USERCHOICE
+	echo -en "${NOCOLOR}"
+}
+
+containerSelect() {
 	allContainers=($(ls -1 ${dockerFolder}))
 	declare -a removeNonContainers
 
-	eprint "${PURPLE}Which container would you like to upgrade the image for?${NOCOLOR}"
 	printContainers=""
 	numSelect=0
 	for i in ${!allContainers[@]}; do
 		container=${allContainers[i]}
 		if [[ -e "${dockerFolder}/${container}/docker-compose.yml" ]]; then echo -n
 		else
-			continue
+			continue # Skip if no docker-compose.yml file present in folder
 		fi
-		removeNonContainers+=("${container}")
 		numSelect=$(( $numSelect + 1 ))
+		removeNonContainers+=("${container}")
 		
 		isRunning=`docker ps | grep ${container}`
 		isRunning=$?
 		rem=$(($numSelect % 2))
-		tputRED=$(tput setaf 1)
-		tputGREEN=$(tput setaf 2)
-		tputnormal=$(tput sgr0)
+		tputRED=$(tput setaf 1)		# Container IS NOT running, set number to RED
+		tputGREEN=$(tput setaf 2)	# Container   IS   running, set number to GREEN
+		tputnormal=$(tput sgr0) 
 		if [[ $isRunning -eq 1 ]]; then
 			printf "%-4s %-19s \n" "${tputRED}${numSelect}." "${tputnormal}${container}"
 		else
 			printf "%-4s %-19s \n" "${tputGREEN}${numSelect}." "${tputnormal}${container}"
 		fi
-		#if [[ $rem -eq 1 ]]; then
-		#	if [[ $isRunning -eq 1 ]]; then
-		#		#printf "%-15s\n" "${tputRED}${numSelect}. ${tputnormal}${container}"
-		#		lprint "${RED}${numSelect}. ${NOCOLOR}${container}"
-		#		#printContainers+=("${RED}${numSelect}. ${NOCOLOR}${container}")
-		#		#printContainers+=("${numSelect}. ${container}")
-		#	else
-		#		#printf "%-15s\n" "${tputGREEN}${numSelect}. ${tputnormal}${container}"
-		#		lprint "${GREEN}${numSelect}. ${NOCOLOR}${container}"
-		#		#printContainers+=("${GREEN}${numSelect}. ${NOCOLOR}${container}")
-		#		#printContainers+=("${numSelect}. ${container}")
-		#	fi
-		#else
-		#	if [[ $isRunning -eq 1 ]]; then
-		#		#printf "%-15s\n" "${tputRED}${numSelect}. ${tputnormal}${container}"
-		#		rprint "${RED}${numSelect}. ${NOCOLOR}${container}"
-		#		#printContainers+=("${RED}${numSelect}. ${NOCOLOR}${container}")
-		#		#printContainers+=("${numSelect}. ${container}")
-		#	else
-		#		#printf "%-15s\n" "${tputGREEN}${numSelect}. ${tputnormal}${container}"
-		#		rprint "${GREEN}${numSelect}. ${NOCOLOR}${container}"
-		#		#printContainers+=("${GREEN}${numSelect}. ${NOCOLOR}${container}")
-		#		#printContainers+=("${numSelect}. ${container}")
-		#	fi
-		#fi 
 	done | column 
+
 	for i in ${!allContainers[@]}; do
 		container=${allContainers[i]}
 		if [[ -e "${dockerFolder}/${container}/docker-compose.yml" ]]; then echo -n
@@ -139,31 +213,18 @@ prompt() {
 	done #| column 
 
 
-
-#	echo "------BEFORE--------"
-#	for value in "${removeNonContainers[@]}"; do 
-#		echo -e "$value"
-#	done
-
-	# Remove all options that are not containers
+# REMOVE ALL ENTRIES THAT DO NO CONTAIN DOCKER-COMPOSE FILES
+# If we do not, then all those folders mess up the number selection.
 	unset allContainers[@]
 	allContainers=("${removeNonContainers[@]}")
-
-#	echo "------AFTER--------"
-#	for value in "${allContainers[@]}"; do 
-#		echo -e "$value"
-#	done
 
 	echo -en "${prefix} Select: ${GREEN}"
 	read -r USERCHOICE
 	echo -en "${NOCOLOR}"
-	USERCHOICE=$(( $USERCHOICE -1 ))
-  
 }
 
 
 prompt
-
 while true; do
 	case $USERCHOICE in 
 		x | X | q | Q | exit)
@@ -171,19 +232,9 @@ while true; do
 			exit
 			;;
 		[0-9]* )
-			if [[ $USERCHOICE -gt ${#allContainers[@]} ]]; then
-<<<<<<< HEAD
-				echo -en "\033[1A"
-				eprint "${ORANGE}Please select a valid choice${NOCOLOR}. You chose '$USERCHOICE'"
-				sleep .75
-=======
-				#echo -en "\033[1A"
-				#eprint "${ORANGE}Please select a valid choice${NOCOLOR}"
-				#sleep .75
-				#continue
-
+			if [[ $USERCHOICE -gt 5 ]]; then
 				echo -en "${prefix} ${ORANGE}Please select a valid choice${NOCOLOR}"
-				sleep .75 
+				sleep 1.75 
         echo -en "${RESET_LINE}" 	# Clear text to end of line
 				echo -en "${CURSORUP}"
 				echo -en "${CLR_LINE_END}"
@@ -192,13 +243,115 @@ while true; do
         read USERCHOICE
         echo -en "${NOCOLOR}"
         USERCHOICE=$(( $USERCHOICE -1 ))
->>>>>>> a5c98b75490a9f8787265269415e51c8ac49cb12
+#>>>>>>> a5c98b75490a9f8787265269415e51c8ac49cb12
+				continue
+			fi
+			if   [[ $USERCHOICE -eq 1 ]]; then # Upgrade
+				action="upgrade"
+				eprint "${PURPLE}Which container would you like to ${GREEN}UPGRADE${PURPLE} the image for?${NOCOLOR}"
+				containerSelect
+			elif [[ $USERCHOICE -eq 2 ]]; then # Start
+				action="start"
+				eprint "${PURPLE}Which container would you like to ${GREEN}START${PURPLE}?${NOCOLOR}"
+				containerSelect
+			elif [[ $USERCHOICE -eq 3 ]]; then # Restart
+				action="restart"
+				eprint "${PURPLE}Which container would you like to ${ORANGE}RESTART${PURPLE}?${NOCOLOR}"
+				containerSelect
+			elif [[ $USERCHOICE -eq 4 ]]; then # Stop 
+				action="stop"
+				eprint "${PURPLE}Which container would you like to ${RED}STOP${PURPLE}?${NOCOLOR}"
+				containerSelect
+			elif [[ $USERCHOICE -eq 5 ]]; then # Remove
+				action="remove"
+				eprint "${PURPLE}Which container would you like to ${RED}REMOVE${PURPLE}?${NOCOLOR}"
+				containerSelect
+			fi
+
+			break
+			;;
+		* )
+			eprint "Nice try dick-nuts.."
+      sleep .75 
+      echo -en "${RESET_LINE}" 	# Clear text to end of line
+      echo -en "${CURSORUP}"
+      echo -en "${CLR_LINE_END}"
+
+      echo -en "${prefix} Select: ${GREEN}"
+      read USERCHOICE
+      echo -en "${NOCOLOR}"
+			break
+			;;
+	esac
+done
+
+while true; do
+	case $USERCHOICE in 
+		x | X | q | Q | exit)
+			eprint "Exiting..."
+			exit
+			;;
+		[0-9]* )
+			USERCHOICE=$(( $USERCHOICE - 1 ))
+			#echo "You chose a number!" 
+			if [[ $USERCHOICE -gt ${#allContainers[@]} ]]; then
+#<<<<<<< HEAD
+				#echo -en "\033[1A"
+				#eprint "${ORANGE}Please select a valid choice${NOCOLOR}. You chose '$USERCHOICE'"
+				#sleep .75
+#=======
+				#echo -en "\033[1A"
+				#eprint "${ORANGE}Please select a valid choice${NOCOLOR}"
+				#sleep .75
+				#continue
+
+				echo -en "${prefix} ${ORANGE}Please select a valid choice${NOCOLOR}"
+				sleep 1.75 
+        echo -en "${RESET_LINE}" 	# Clear text to end of line
+				echo -en "${CURSORUP}"
+				echo -en "${CLR_LINE_END}"
+
+        echo -en "${prefix} Select: ${GREEN}"
+        read USERCHOICE
+        echo -en "${NOCOLOR}"
+        USERCHOICE=$(( $USERCHOICE -1 ))
+#>>>>>>> a5c98b75490a9f8787265269415e51c8ac49cb12
 				continue
 
 			fi
 			break
 			;;
 		* )
+			#echo "You chose anything that wasn't a number!" 
+
+			for i in ${!allContainers[@]}; do
+				container=${allContainers[i]}
+				#echo "Container: ${container}"
+				#echo "User Choice ${USERCHOICE}"
+				if [[ "$container" == "$USERCHOICE" ]]; then 
+				for i in ${!allContainers[@]}; do # Find the container's number and resave USERCHOICE
+					container=${allContainers[i]}
+					numSelect=$(( $numSelect + 1 ))
+					if [[ "$USERCHOICE" == "${container}" ]]; then
+						#echo "Found '$USERCHOICE'"
+						USERCHOICE=$numSelect # The container's coorosponding number has been found
+						USERCHOICE=$(( $USERCHOICE - 1 ))
+						#echo "Resaved as: $USERCHOICE"
+						break
+					fi
+				done
+					stopContainer ${allContainers[$USERCHOICE]}
+					removeContainer ${allContainers[$USERCHOICE]}
+					recreateContainer ${allContainers[$USERCHOICE]}
+					exit
+				else
+					#echo -en "${prefix} Bad choice\n\n"
+					continue
+				fi
+				removeNonContainers+=("${container}")
+			done #| column 
+
+
       echo -en "${prefix} ${ORANGE}Please select a valid choice${NOCOLOR}"
       sleep .75 
       echo -en "${RESET_LINE}" 	# Clear text to end of line
@@ -214,34 +367,26 @@ while true; do
 	esac
 done
 
-stopContainer ${allContainers[$USERCHOICE]}
-removeContainer ${allContainers[$USERCHOICE]}
-recreateContainer ${allContainers[$USERCHOICE]}
+# Check to see if it's Gluetun (VPN) that we're restarting
+# If yes, restart everything that uses it as a network interface
 
+echo ${allContainers[$USERCHOICE]}
 
-#eprint "${PURPLE}------------------------------------"
-#eprint "${PURPLE}----- ${ORANGE}Stopping Containers ${PURPLE}----------"
-#eprint "${PURPLE}------------------------------------"
-#
-#
-#eprint "${PURPLE}------------------------------------"
-#eprint "${PURPLE}----- ${RED}Removing Containers ${PURPLE}----------"
-#eprint "${PURPLE}------------------------------------"
-#
-#eprint "${PURPLE}------------------------------------"
-#eprint "${PURPLE}----- ${GREEN}Starting Containers ${PURPLE}----------"
-#eprint "${PURPLE}------------------------------------"
-#
-#for n in {15..1}
-#do
-#        cursor=("|" "/" "-" "\\")
-#        for i in ${!cursor[@]}; do
-#                echo -en "${CLEARLINE}" # Clear text line
-#                echo -en "                                                                                  \r"
-#                echo -en "\r${ORANGE}[ INFO ]${NOCOLOR} ${LIGHTGREY} VPN Booting[${cursor[i]}]${NOCOLOR} - $n"
-#                sleep 0.25
-#        done
-#done
-#echo ""
-#
-#
+if   [[ $action == "upgrade" ]]; then
+	runContainerRebuild ${USERCHOICE}
+elif [[ $action == "start" ]]; then
+	startContainer ${allContainers[$USERCHOICE]}
+elif [[ $action == "restart" ]]; then
+	stopContainer ${allContainers[$USERCHOICE]}
+	startContainer ${allContainers[$USERCHOICE]}
+elif [[ $action == "stop" ]]; then
+	stopContainer ${allContainers[$USERCHOICE]}
+elif [[ $action == "remove" ]]; then
+	stopContainer ${allContainers[$USERCHOICE]}
+	removeContainer ${allContainers[$USERCHOICE]}
+fi
+
+`docker logs -f ${allContainers[$USERCHOICE]}`
+wait 5
+
+exit
