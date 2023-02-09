@@ -42,4 +42,4 @@ ln -s ~/dotfiles/.vimrc ~/.
 source ~/.bashrc
 
 #Enable execution of some scripts
-sudo chmod ~/dotfiles/scripts/sshToServers.sh
+sudo chmod 755 ~/dotfiles/scripts/sshToServers.sh
