@@ -62,6 +62,7 @@ alias shutdown="sudo shutdown 0"
 alias reboot="sudo shutdown -r 0"
 alias restart="sudo shutdown -r 0"
 
+alias server="~/dotfiles/scripts/sshToServers.sh"
 alias router="ssh roki@192.168.1.1"
 
 alias motd="/etc/profile.d/motd.sh"
