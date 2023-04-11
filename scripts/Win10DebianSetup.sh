@@ -40,3 +40,6 @@ ln -s ~/dotfiles/.bashrc ~/.
 ln -s ~/dotfiles/.vimrc ~/.
 # Apply config files
 source ~/.bashrc
+
+#Enable execution of some scripts
+sudo chmod 755 ~/dotfiles/scripts/sshToServers.sh

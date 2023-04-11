@@ -3,7 +3,12 @@ script_path1=$(dirname $(readlink -f $0))
 script_path_with_name="$script_path1/$script_name1"
 server_path_with_name="$script_path1/.serversToSshToo.sh"
 
+declare -A server_names
+declare -A server_users
+declare -A server_ports
+declare -A server_addrs
 source $script_path1/.serversToSshToo.sh
+
 ############################################################
 #    Add list of all servers to ./serversToSshToo.sh. 
 #    Must follow following format:
@@ -63,10 +68,15 @@ connect_prompt()
         tempNum=0
         for i in ${servers[@]}; do
                 tempNum=$(( $tempNum + 1 ))
-                name=$(eval "echo \$server_${i}_name")
-                user=$(eval "echo \$server_${i}_user")
-                port=$(eval "echo \$server_${i}_port")
-                addr=$(eval "echo \$server_${i}_addr")
+                #name=$(eval "echo \$server_${i}_name")
+                #user=$(eval "echo \$server_${i}_user")
+                #port=$(eval "echo \$server_${i}_port")
+                #addr=$(eval "echo \$server_${i}_addr")
+
+                name=${server_names[$i]}
+                user=${server_users[$i]}
+                port=${server_ports[$i]}
+                addr=${server_addrs[$i]}
 
                 ##echo -e "${PREFIX}${ORANGE}Loop #${tempNum}"
                 ##echo -e "${PREFIX}${ORANGE}Name: ${name}"
@@ -95,10 +105,15 @@ connect_prompt()
 
 connect()
 {
-        name=$(eval "echo \$server_${servers[$USERCHOICE]}_name")
-        user=$(eval "echo \$server_${servers[$USERCHOICE]}_user")
-        port=$(eval "echo \$server_${servers[$USERCHOICE]}_port")
-        addr=$(eval "echo \$server_${servers[$USERCHOICE]}_addr")
+    echo "Userchoice: $USERCHOICE"
+        name=${server_names[${servers[$USERCHOICE]}]}
+        user=${server_users[${servers[$USERCHOICE]}]}
+        port=${server_ports[${servers[$USERCHOICE]}]}
+        addr=${server_addrs[${servers[$USERCHOICE]}]}
+        #name=$(eval "echo \$server_${servers[$USERCHOICE]}_name")
+        #user=$(eval "echo \$server_${servers[$USERCHOICE]}_user")
+        #port=$(eval "echo \$server_${servers[$USERCHOICE]}_port")
+        #addr=$(eval "echo \$server_${servers[$USERCHOICE]}_addr")
         echo -e "${prefix}${PURPLE}Connecting to ${CYAN}${name}${NOCOLOR}:"
         echo -e "${prefix}  ${GREEN}ssh -p ${port} ${user}@${addr}${NOCOLOR}"
         # connect to the server
