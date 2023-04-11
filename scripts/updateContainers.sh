@@ -44,6 +44,10 @@ rprint() {
   echo -e "\t\t${NOCOLOR} $1"
 }
 runContainerRebuild() {
+  #echo -en "${GRAY}[ ${CYAN} $(1) ${GRAY}]${NOCOLOR} $1"
+  #echo -en "${GRAY}[ ${CYAN} $(allContainers) ${GRAY}]${NOCOLOR} ${allContainers[$1]}"
+	echo
+	echo
 	if [[ ${allContainers[$1]} == "gluetun" ]]; then echo -n
 		eprint "GLUETUN SELECTED: Rebuilding all Services using network mode 'container:gluetun'"
 
@@ -115,16 +119,17 @@ runContainerRebuild() {
 	fi
 
 
-	sleep 1.5
-	# Double Check to make sure the container is running again. 
-
-	isRunning=`docker ps | grep ${container}`
-	isRunning=$?
-	if [[ $isRunning -eq 1 ]]; then echo -n
-	else
-		echo "Container still is not running, reattempting to rebuild/update"
-		runContainerRebuild ${$1}
-	fi
+#	echo "...Waiting for Container to wake up"
+#	sleep 3.5
+#	# Double Check to make sure the container is running again. 
+#
+#	isRunning=`docker ps | grep ${allContainers[$1]}`
+#	isRunning=$?
+#	if [[ $isRunning -eq 1 ]]; then echo -n
+#	else
+#		echo "Container still is not running, reattempting to rebuild/update"
+#		runContainerRebuild ${allContainers[$1]}
+#	fi
 }
 stopContainer() {
         response=$(docker stop $1)
@@ -340,9 +345,10 @@ while true; do
 						break
 					fi
 				done
-					stopContainer ${allContainers[$USERCHOICE]}
-					removeContainer ${allContainers[$USERCHOICE]}
-					recreateContainer ${allContainers[$USERCHOICE]}
+					runContainerRebuild $USERCHOICE
+					#stopContainer ${allContainers[$USERCHOICE]}
+					#removeContainer ${allContainers[$USERCHOICE]}
+					#recreateContainer ${allContainers[$USERCHOICE]}
 					exit
 				else
 					#echo -en "${prefix} Bad choice\n\n"
@@ -370,9 +376,13 @@ done
 # Check to see if it's Gluetun (VPN) that we're restarting
 # If yes, restart everything that uses it as a network interface
 
+echo "Come on"
 echo ${allContainers[$USERCHOICE]}
+echo "Come on"
+
 
 if   [[ $action == "upgrade" ]]; then
+	echo "upgrade"
 	runContainerRebuild ${USERCHOICE}
 elif [[ $action == "start" ]]; then
 	startContainer ${allContainers[$USERCHOICE]}
