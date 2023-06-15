@@ -2,27 +2,6 @@ script_name1=`basename $0`
 script_path1=$(dirname $(readlink -f $0))
 script_path_with_name="$script_path1/$script_name1"
 
-declare -A tmux_sessions
-
-############################################################
-#    Add list of all servers to ./serversToSshToo.sh.
-#    Must follow following format:
-#
-#       server_SERVERNAME_name=""
-#       server_SERVERNAME_user=""
-#       server_SERVERNAME_port=""
-#       server_SERVERNAME_addr=""
-#       servers+=('SERVERNAME')
-#
-#       server_SERVERNAME_2_name="Display Name"
-#       server_SERVERNAME_2_user="user2"
-#       server_SERVERNAME_2_port="22"
-#       server_SERVERNAME_2_addr="10.0.0.2"
-#       servers+=('SERVERNAME_2')
-#
-############################################################
-
-
 ############################################################
 # ----------------------------------
 # Colors
@@ -57,28 +36,26 @@ trap '{ rm -f -- "ssh.error"; }' EXIT
 
 sessions_prompt()
 {
-        echo -e "${prefix}${GREEN}======================================================="
-        echo -e "${prefix}${GREEN}                Manage TMUX Sesssions"
-        echo -e "${prefix}${GREEN}=======================================================${NOCOLOR}"
-        tempNum=0
-
-				echo -en "${prefix}   "
-				echo -e "${CYAN}Session Name	 Creation Date	Size${NOCOLOR}" | awk '{printf "%-20s %22s %12s\n", $1" "$2, $3" "$4, $5}'
-				tmux_sessions=$(tmux list-sessions | awk '{printf "%-20s %3s %2s %8s %12s\n", $1, $6, $7, $8, $10}')
-				#tmux_sessions_names=$(tmux list-sessions | awk '{print $1}')
-				#tmux_sessions_dates=$(tmux list-sessions | awk '{print $6" "$7" "$8}')
-				#tmux_sessions_sizes=$(tmux list-sessions | awk '{print $10}')
+				# Read in Tmux session data into 3 Arrays: Names, Dates, Sizes
 				IFS=$'\n' read -r -d '' -a tmux_sessions_names < <( tmux list-sessions | awk '{print $1}' && printf '\0' )
 				IFS=$'\n' read -r -d '' -a tmux_sessions_dates < <( tmux list-sessions | awk '{print $6" "$7" "$8}' && printf '\0' )
 				IFS=$'\n' read -r -d '' -a tmux_sessions_sizes < <( tmux list-sessions | awk '{print $10}' && printf '\0' )
 
-				char_to_remove=":"
-				# Loop over the array and remove the specified character
+				# Loop over the NAMES array and remove the trailing ':' character from tmux names
 				for ((i = 0; i < ${#tmux_sessions_names[@]}; i++)); do
-					# Remove the character using parameter expansion
-					tmux_sessions_names[i]=${tmux_sessions_names[i]//$char_to_remove/}
+					# Remove the ':' character using parameter expansion
+					tmux_sessions_names[i]=${tmux_sessions_names[i]//:/}
 				done
 
+        echo -e "${prefix}${GREEN}======================================================="
+        echo -e "${prefix}${GREEN}                Manage TMUX Sesssions"
+        echo -e "${prefix}${GREEN}=======================================================${NOCOLOR}"
+				# Print Header
+				# [ TMUX ]   Session Name     Creation Date    Size
+				echo -en "${prefix}   "
+				echo -e "${CYAN}Session Name	 Creation Date	Size${NOCOLOR}" | awk '{printf "%-20s %22s %12s\n", $1" "$2, $3" "$4, $5}'
+
+        tempNum=0
 				for ((i = 0; i < ${#tmux_sessions_names[@]}; i++)); do
                 tempNum=$(( $tempNum + 1 ))
                 name=${tmux_sessions_names[$i]}
@@ -89,9 +66,10 @@ sessions_prompt()
                 echo -e "${GREEN}${tempNum}.	${NOCOLOR}${name}	${date}	${size}" | awk '{printf "%-3s %-17s %22s %12s\n", $1, $2, $3" "$4" "$5, $6}'
 
                 ## Example
-                ##echo -e "1. databackup      Jun 12 23:13:43 [322x454]"
-                ##echo -e "2. docker logs     Jun 12 23:13:43 [322x454]"
-                ##echo -e "3. multipleterms   Jun 12 23:13:43 [322x454]"
+								##echo -e "Session Name         Creation Date  Size
+                ##echo -e "1. databackup      Jun 12 23:13:43  [322x454]"
+                ##echo -e "2. docker logs     Jun 12 23:13:43  [322x454]"
+                ##echo -e "3. multipleterms   Jun 12 23:13:43  [322x454]"
         done
 				echo -e "${prefix}"
         echo -e "${prefix}${LIGHTGREEN}n. ${LIGHTGREEN}Add New Session${NOCOLOR}"
@@ -105,8 +83,6 @@ sessions_prompt()
 }
 
 attach_session () {
-	#echo "User Choice: $USERCHOICE"
-	#echo "Actual Choice: ${tmux_sessions_names[$USERCHOICE]}"
 	echo -e "${prefix}${LIGHTGREEN}Attaching To Session: '${GREEN}${tmux_sessions_names[$USERCHOICE]}${LIGHTGREEN}'${NOCOLOR}"
 	echo -e "${prefix}..."
 	echo -en "${prefix}${YELLOW}"
