@@ -30,56 +30,52 @@ WHITE='\033[1;37m'
 # Script Prefix for use with echo
 prefix="${GREY}[ ${GREEN}TMUX ${GREY}]${NOCOLOR} "
 
-
-trap '{ rm -f -- "ssh.error"; }' EXIT
-
-
 sessions_prompt()
 {
-				# Read in Tmux session data into 3 Arrays: Names, Dates, Sizes
-				IFS=$'\n' read -r -d '' -a tmux_sessions_names < <( tmux list-sessions | awk '{print $1}' && printf '\0' )
-				IFS=$'\n' read -r -d '' -a tmux_sessions_dates < <( tmux list-sessions | awk '{print $6" "$7" "$8}' && printf '\0' )
-				IFS=$'\n' read -r -d '' -a tmux_sessions_sizes < <( tmux list-sessions | awk '{print $10}' && printf '\0' )
+	# Read in Tmux sessions data into 3 Arrays: Names, Dates, Sizes
+	IFS=$'\n' read -r -d '' -a tmux_sessions_names < <( tmux list-sessions | awk '{print $1}' && printf '\0' )
+	IFS=$'\n' read -r -d '' -a tmux_sessions_dates < <( tmux list-sessions | awk '{print $6" "$7" "$8}' && printf '\0' )
+	IFS=$'\n' read -r -d '' -a tmux_sessions_sizes < <( tmux list-sessions | awk '{print $10}' && printf '\0' )
 
-				# Loop over the NAMES array and remove the trailing ':' character from tmux names
-				for ((i = 0; i < ${#tmux_sessions_names[@]}; i++)); do
-					# Remove the ':' character using parameter expansion
-					tmux_sessions_names[i]=${tmux_sessions_names[i]//:/}
-				done
+	# Loop over the NAMES array and remove the trailing ':' character from tmux names
+	for ((i = 0; i < ${#tmux_sessions_names[@]}; i++)); do
+		# Remove the ':' character using parameter expansion
+		tmux_sessions_names[i]=${tmux_sessions_names[i]//:/}
+	done
 
-        echo -e "${prefix}${GREEN}======================================================="
-        echo -e "${prefix}${GREEN}                Manage TMUX Sesssions"
-        echo -e "${prefix}${GREEN}=======================================================${NOCOLOR}"
-				# Print Header
-				# [ TMUX ]   Session Name     Creation Date    Size
-				echo -en "${prefix}   "
-				echo -e "${CYAN}Session Name	 Creation Date	Size${NOCOLOR}" | awk '{printf "%-20s %22s %12s\n", $1" "$2, $3" "$4, $5}'
+	echo -e "${prefix}${GREEN}======================================================="
+	echo -e "${prefix}${GREEN}                Manage TMUX Sesssions"
+	echo -e "${prefix}${GREEN}=======================================================${NOCOLOR}"
+	# Print Header
+	# [ TMUX ]   Session Name     Creation Date    Size
+	echo -en "${prefix}   "
+	echo -e "${CYAN}Session Name	 Creation Date	Size${NOCOLOR}" | awk '{printf "%-20s %22s %12s\n", $1" "$2, $3" "$4, $5}'
 
-        tempNum=0
-				for ((i = 0; i < ${#tmux_sessions_names[@]}; i++)); do
-                tempNum=$(( $tempNum + 1 ))
-                name=${tmux_sessions_names[$i]}
-                date=${tmux_sessions_dates[$i]}
-                size=${tmux_sessions_sizes[$i]}
+	tempNum=0
+	for ((i = 0; i < ${#tmux_sessions_names[@]}; i++)); do
+		tempNum=$(( $tempNum + 1 ))
+		name=${tmux_sessions_names[$i]}
+		date=${tmux_sessions_dates[$i]}
+		size=${tmux_sessions_sizes[$i]}
 
-								echo -ne "${prefix}"
-                echo -e "${GREEN}${tempNum}.	${NOCOLOR}${name}	${date}	${size}" | awk '{printf "%-3s %-17s %22s %12s\n", $1, $2, $3" "$4" "$5, $6}'
+		echo -ne "${prefix}"
+		echo -e "${GREEN}${tempNum}.	${NOCOLOR}${name}	${date}	${size}" | awk '{printf "%-3s %-17s %22s %12s\n", $1, $2, $3" "$4" "$5, $6}'
 
-                ## Example
-								##echo -e "Session Name         Creation Date  Size
-                ##echo -e "1. databackup      Jun 12 23:13:43  [322x454]"
-                ##echo -e "2. docker logs     Jun 12 23:13:43  [322x454]"
-                ##echo -e "3. multipleterms   Jun 12 23:13:43  [322x454]"
-        done
-				echo -e "${prefix}"
-        echo -e "${prefix}${LIGHTGREEN}n. ${LIGHTGREEN}Add New Session${NOCOLOR}"
-        echo -e "${prefix}${LIGHTRED}d. ${LIGHTRED}Delete a Session${NOCOLOR}"
-        echo -e "${prefix}${LIGHTRED}x. ${LIGHTRED}Exit${NOCOLOR}"
+		## Example
+		##echo -e "Session Name         Creation Date  Size
+		##echo -e "1. databackup      Jun 12 23:13:43  [322x454]"
+		##echo -e "2. docker logs     Jun 12 23:13:43  [322x454]"
+		##echo -e "3. multipleterms   Jun 12 23:13:43  [322x454]"
+	done
+	echo -e "${prefix}"
+	echo -e "${prefix}${LIGHTGREEN}n. ${LIGHTGREEN}Add New Session${NOCOLOR}"
+	echo -e "${prefix}${LIGHTRED}d. ${LIGHTRED}Delete a Session${NOCOLOR}"
+	echo -e "${prefix}${LIGHTRED}x. ${LIGHTRED}Exit${NOCOLOR}"
 
 
-        echo -en "${prefix}Select: ${GREEN}"
-        read USERCHOICE
-        echo -en "${NOCOLOR}"
+	echo -en "${prefix}Select: ${GREEN}"
+	read USERCHOICE
+	echo -en "${NOCOLOR}"
 }
 
 attach_session () {
@@ -120,58 +116,58 @@ kill_session () {
 
 
 while true; do
-        sessions_prompt
+	sessions_prompt
 
-        case $USERCHOICE in
-                x | X | q | Q | e | e | exit)
-                        echo -e "${prefix}Exiting..."
-                        exit
-                        ;;
-                n | N)
-												create_session
-                        ;;
-                d | D)
-												kill_session
-                        ;;
-                r | R)
-                        echo -e "${prefix}${PURPLE}Relaunching Script${NOCOLOR}"
-                        echo -e "${prefix}"
-                        script_path_with_name && exit
-                        exit
-                        ;;
-                [0-9]* )
-                        if [[ $USERCHOICE -gt ${#tmux_sessions_names[@]} ]]; then
-                                echo -en "\033[1A"
-                                echo -e "${prefix}${ORANGE}Please select a valid choice${NOCOLOR}"
-                                sleep .75
-                                # Prevent spamming terminal with too much useless shit (AKA go back and clear 
-                                lines=$(( ${#tmux_sessions_names[@]} ))
-                                lines=$(( ${lines} + 10 ))
-                                for i in $( eval echo {1..$lines} ); do
-                                        echo -en "\033[K"       # Clear text to end of line
-                                        echo -en "\033[1A"      # Move cursor position up 1 row
-                                done
-                                echo
-                                continue
-                        fi
-                        USERCHOICE=$(( $USERCHOICE - 1 ))
-                        break
-                        ;;
-                * )
-                        echo -en "\033[1A"
-                        echo -e "${prefix}${ORANGE}Please select a valid choice${NOCOLOR}"
-                        sleep .75
-                        # Prevent spamming terminal with too much useless shit
-                        lines=$(( ${#tmux_sessions[@]} ))
-                        lines=$(( ${lines} + 10 ))
-                        for i in $( eval echo {1..$lines} ); do
-                                echo -en "\033[K"       # Clear text to end of line
-                                echo -en "\033[1A"      # Move cursor position up 1 row
-                        done
-                        echo
-                        continue
-                        ;;
-        esac
+	case $USERCHOICE in
+		x | X | q | Q | e | e | exit)
+			echo -e "${prefix}Exiting..."
+			exit
+			;;
+		n | N)
+			create_session
+			;;
+		d | D)
+			kill_session
+			;;
+		r | R)
+			echo -e "${prefix}${PURPLE}Relaunching Script${NOCOLOR}"
+			echo -e "${prefix}"
+			script_path_with_name && exit
+			exit
+			;;
+		[0-9]* )
+			if [[ $USERCHOICE -gt ${#tmux_sessions_names[@]} ]]; then
+				echo -en "\033[1A"
+				echo -e "${prefix}${ORANGE}Please select a valid choice${NOCOLOR}"
+				sleep .75
+				# Prevent spamming terminal with too much useless shit (AKA go back and clear 
+				lines=$(( ${#tmux_sessions_names[@]} ))
+				lines=$(( ${lines} + 10 ))
+				for i in $( eval echo {1..$lines} ); do
+					echo -en "\033[K"       # Clear text to end of line
+					echo -en "\033[1A"      # Move cursor position up 1 row
+				done
+				echo
+				continue
+			fi
+			USERCHOICE=$(( $USERCHOICE - 1 ))
+			break
+			;;
+		* )
+			echo -en "\033[1A"
+			echo -e "${prefix}${ORANGE}Please select a valid choice${NOCOLOR}"
+			sleep .75
+			# Prevent spamming terminal with too much useless shit
+			lines=$(( ${#tmux_sessions[@]} ))
+			lines=$(( ${lines} + 10 ))
+			for i in $( eval echo {1..$lines} ); do
+				echo -en "\033[K"       # Clear text to end of line
+				echo -en "\033[1A"      # Move cursor position up 1 row
+			done
+			echo
+			continue
+			;;
+	esac
 done
 
 attach_session
