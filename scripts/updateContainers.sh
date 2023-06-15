@@ -1,3 +1,5 @@
+#!/bin/bash
+
 ##########################################################
 ### Description:
 ###		Script will display all Docker Containers based off

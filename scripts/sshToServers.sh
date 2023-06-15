@@ -1,3 +1,5 @@
+#!/bin/bash
+
 script_name1=`basename $0`
 script_path1=$(dirname $(readlink -f $0))
 script_path_with_name="$script_path1/$script_name1"

@@ -1,3 +1,5 @@
+#!/bin/bash
+
 ##########################################################
 ### Description:
 ###		Script will display all Wireguard clients based off
