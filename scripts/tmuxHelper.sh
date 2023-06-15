@@ -29,6 +29,8 @@ LIGHTCYAN='\033[1;36m'
 WHITE='\033[1;37m'
 ###########################################################################
 
+trap '{ echo -e "\n${GREY}[ ${RED}TMUX ${GREY}] "; }' EXIT
+
 # Script Prefix for use with echo
 prefix="${GREY}[ ${GREEN}TMUX ${GREY}]${NOCOLOR} "
 
