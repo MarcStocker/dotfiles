@@ -57,9 +57,9 @@ trap '{ rm -f -- "ssh.error"; }' EXIT
 
 sessions_prompt()
 {
-        echo -e "${prefix}${GREEN}============================================="
-        echo -e "${prefix}${GREEN}           Manage TMUX Sesssions"
-        echo -e "${prefix}${GREEN}=============================================${NOCOLOR}"
+        echo -e "${prefix}${GREEN}======================================================="
+        echo -e "${prefix}${GREEN}                Manage TMUX Sesssions"
+        echo -e "${prefix}${GREEN}=======================================================${NOCOLOR}"
         tempNum=0
 
 				echo -en "${prefix}   "
@@ -79,47 +79,23 @@ sessions_prompt()
 					tmux_sessions_names[i]=${tmux_sessions_names[i]//$char_to_remove/}
 				done
 
-
-				#echo -e "${prefix}Sessions:"
-				#echo -e "$tmux_sessions"
-				#echo
-				#echo -e "${prefix}Names:"
-				#echo -e "${tmux_sessions_names[@]}"
-				#echo
-				#echo -e "${prefix}Dates:"
-				#echo -e "$tmux_sessions_dates"
-				#echo
-				#echo -e "${prefix}Sizes:"
-				#echo -e "$tmux_sessions_sizes"
-				#echo
-				#echo
-				#echo
-				#echo TESTING
-				#	echo "name: ${tmux_sessions_names[2]}"
-
-				#echo 
-				#echo "FOR LOOP:"
 				for ((i = 0; i < ${#tmux_sessions_names[@]}; i++)); do
                 tempNum=$(( $tempNum + 1 ))
                 name=${tmux_sessions_names[$i]}
                 date=${tmux_sessions_dates[$i]}
                 size=${tmux_sessions_sizes[$i]}
-							#	echo -e "DEBUG:"
-							#	echo -e "Name: ${name}"
-							#	echo -e "Date: ${date}"
-							#	echo -e "Size: ${size}"
-							#	
-							#	echo -e "____THIS ONE____"
+
 								echo -ne "${prefix}"
                 echo -e "${GREEN}${tempNum}.	${NOCOLOR}${name}	${date}	${size}" | awk '{printf "%-3s %-17s %22s %12s\n", $1, $2, $3" "$4" "$5, $6}'
 
                 ## Example
-                ##echo -e "1. Production Server"
-                ##echo -e "2. Dev Test Server"
-                ##echo -e "3. Private Server"
+                ##echo -e "1. databackup      Jun 12 23:13:43 [322x454]"
+                ##echo -e "2. docker logs     Jun 12 23:13:43 [322x454]"
+                ##echo -e "3. multipleterms   Jun 12 23:13:43 [322x454]"
         done
+				echo -e "${prefix}"
         echo -e "${prefix}${LIGHTGREEN}n. ${LIGHTGREEN}Add New Session${NOCOLOR}"
-        echo -e "${prefix}${LIGHTRED}d. ${LIGHTRED}Delete Session${NOCOLOR}"
+        echo -e "${prefix}${LIGHTRED}d. ${LIGHTRED}Delete a Session${NOCOLOR}"
         echo -e "${prefix}${LIGHTRED}x. ${LIGHTRED}Exit${NOCOLOR}"
 
 
@@ -129,8 +105,11 @@ sessions_prompt()
 }
 
 attach_session () {
-	echo "User Choice: $USERCHOICE"
-	echo "Actual Choice: ${tmux_sessions_names[$USERCHOICE]}"
+	#echo "User Choice: $USERCHOICE"
+	#echo "Actual Choice: ${tmux_sessions_names[$USERCHOICE]}"
+	echo -e "${prefix}${LIGHTGREEN}Attaching To Session: '${GREEN}${tmux_sessions_names[$USERCHOICE]}${LIGHTGREEN}'${NOCOLOR}"
+	echo -e "${prefix}..."
+	echo -en "${prefix}${YELLOW}"
 	tmux attach-session -t ${tmux_sessions_names[$USERCHOICE]}
 }
 
@@ -139,10 +118,11 @@ create_session () {
 	echo -en "${prefix}Name of New Session: ${GREEN}"
 	read sessionName
 	echo -en "${NOCOLOR}"
-	echo -e "${prefix}${LIGHTGREEN}Starting Session: '${sessionName}'"
+	echo -e "${prefix}${LIGHTGREEN}Starting Session: '${GREEN}${sessionName}${LIGHTGREEN}'${NOCOLOR}"
 	echo -e "${prefix}..."
-	echo -en "${prefix}"
+	echo -en "${prefix}${YELLOW}"
 	tmux new-session -s ${sessionName}
+	echo -en "${NOCOLOR}"
 	exit
 }
 
@@ -151,11 +131,12 @@ kill_session () {
 	echo -en "${prefix}Name of Session to Delete: ${GREEN}"
 	read sessionName
 	echo -en "${NOCOLOR}"
-	echo -e "${prefix}${LIGHTGREEN}Deleting Session: '${sessionName}'"
-	echo -e "${prefix}..."
+	echo -e "${prefix}${LIGHTGREEN}Deleting Session: '${GREEN}${sessionName}${LIGHTGREEN}'${NOCOLOR}"
+	echo -e "${prefix}${NOCOLOR}..."
+	echo -ne "${prefix}${YELLOW}"
 	tmux kill-session -t ${sessionName}
-	if [[ $? -ne 0 ]]; then
-		echo "ERROR"
+	if [[ $? -eq 0 ]]; then
+		echo -en "\033[2K\r"      # Clear current line (no error message to display)
 	fi
 	sleep 2
 }
@@ -189,7 +170,7 @@ while true; do
                                 sleep .75
                                 # Prevent spamming terminal with too much useless shit (AKA go back and clear 
                                 lines=$(( ${#tmux_sessions_names[@]} ))
-                                lines=$(( ${lines} + 7 ))
+                                lines=$(( ${lines} + 10 ))
                                 for i in $( eval echo {1..$lines} ); do
                                         echo -en "\033[K"       # Clear text to end of line
                                         echo -en "\033[1A"      # Move cursor position up 1 row
@@ -206,7 +187,7 @@ while true; do
                         sleep .75
                         # Prevent spamming terminal with too much useless shit
                         lines=$(( ${#tmux_sessions[@]} ))
-                        lines=$(( ${lines} + 7 ))
+                        lines=$(( ${lines} + 10 ))
                         for i in $( eval echo {1..$lines} ); do
                                 echo -en "\033[K"       # Clear text to end of line
                                 echo -en "\033[1A"      # Move cursor position up 1 row
