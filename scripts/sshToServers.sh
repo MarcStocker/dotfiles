@@ -3,9 +3,14 @@ script_path1=$(dirname $(readlink -f $0))
 script_path_with_name="$script_path1/$script_name1"
 server_path_with_name="$script_path1/.serversToSshToo.sh"
 
+declare -A server_names
+declare -A server_users
+declare -A server_ports
+declare -A server_addrs
 source $script_path1/.serversToSshToo.sh
+
 ############################################################
-#    Add list of all servers to ./serversToSshToo.sh. 
+#    Add list of all servers to ./serversToSshToo.sh.
 #    Must follow following format:
 #
 #       server_SERVERNAME_name=""
@@ -63,10 +68,15 @@ connect_prompt()
         tempNum=0
         for i in ${servers[@]}; do
                 tempNum=$(( $tempNum + 1 ))
-                name=$(eval "echo \$server_${i}_name")
-                user=$(eval "echo \$server_${i}_user")
-                port=$(eval "echo \$server_${i}_port")
-                addr=$(eval "echo \$server_${i}_addr")
+                #name=$(eval "echo \$server_${i}_name")
+                #user=$(eval "echo \$server_${i}_user")
+                #port=$(eval "echo \$server_${i}_port")
+                #addr=$(eval "echo \$server_${i}_addr")
+
+                name=${server_names[$i]}
+                user=${server_users[$i]}
+                port=${server_ports[$i]}
+                addr=${server_addrs[$i]}
 
                 ##echo -e "${PREFIX}${ORANGE}Loop #${tempNum}"
                 ##echo -e "${PREFIX}${ORANGE}Name: ${name}"
@@ -95,10 +105,15 @@ connect_prompt()
 
 connect()
 {
-        name=$(eval "echo \$server_${servers[$USERCHOICE]}_name")
-        user=$(eval "echo \$server_${servers[$USERCHOICE]}_user")
-        port=$(eval "echo \$server_${servers[$USERCHOICE]}_port")
-        addr=$(eval "echo \$server_${servers[$USERCHOICE]}_addr")
+    echo "Userchoice: $USERCHOICE"
+        name=${server_names[${servers[$USERCHOICE]}]}
+        user=${server_users[${servers[$USERCHOICE]}]}
+        port=${server_ports[${servers[$USERCHOICE]}]}
+        addr=${server_addrs[${servers[$USERCHOICE]}]}
+        #name=$(eval "echo \$server_${servers[$USERCHOICE]}_name")
+        #user=$(eval "echo \$server_${servers[$USERCHOICE]}_user")
+        #port=$(eval "echo \$server_${servers[$USERCHOICE]}_port")
+        #addr=$(eval "echo \$server_${servers[$USERCHOICE]}_addr")
         echo -e "${prefix}${PURPLE}Connecting to ${CYAN}${name}${NOCOLOR}:"
         echo -e "${prefix}  ${GREEN}ssh -p ${port} ${user}@${addr}${NOCOLOR}"
         # connect to the server
@@ -157,35 +172,35 @@ while true; do
                           echo -e "${prefix}${ORANGE}Creating File...${NOCOLOR}"
 
                           echo "############################################################" >> $server_path_with_name
-                          echo "#    Add list of all servers to ./serversToSshToo.sh. " >> $server_path_with_name
+                          echo "#    Add list of all servers to $server_path_with_name " >> $server_path_with_name
                           echo "#    Must follow following format:" >> $server_path_with_name
                           echo "#" >> $server_path_with_name
-                          echo "#       server_SERVERNAME_name=""" >> $server_path_with_name
-                          echo "#       server_SERVERNAME_user=""" >> $server_path_with_name
-                          echo "#       server_SERVERNAME_port=""" >> $server_path_with_name
-                          echo "#       server_SERVERNAME_addr=""" >> $server_path_with_name
                           echo "#       servers+=('SERVERNAME')""" >> $server_path_with_name
+                          echo "#       server_names[\${servers[-1]}]=""" >> $server_path_with_name
+                          echo "#       server_users[\${servers[-1]}]=""" >> $server_path_with_name
+                          echo "#       server_ports[\${servers[-1]}]=""" >> $server_path_with_name
+                          echo "#       server_addrs[\${servers[-1]}]=""" >> $server_path_with_name
                           echo "#" >> $server_path_with_name
-                          echo "#       server_SERVERNAME_2_name="Display Name"" >> $server_path_with_name
-                          echo "#       server_SERVERNAME_2_user="user2"" >> $server_path_with_name
-                          echo "#       server_SERVERNAME_2_port="22"" >> $server_path_with_name
-                          echo "#       server_SERVERNAME_2_addr="10.0.0.2"" >> $server_path_with_name
                           echo "#       servers+=('SERVERNAME_2')" >> $server_path_with_name
+                          echo "#       server_names[\${servers[-1]}]=\"Display Name\"" >> $server_path_with_name
+                          echo "#       server_users[\${servers[-1]}]=\"user2\"" >> $server_path_with_name
+                          echo "#       server_ports[\${servers[-1]}]=\"22\"" >> $server_path_with_name
+                          echo "#       server_addrs[\${servers[-1]}]=\"10.0.0.2\"" >> $server_path_with_name
                           echo "#" >> $server_path_with_name
                           echo "############################################################" >> $server_path_with_name
                           echo "" >> $server_path_with_name
-                          echo "server_main_server_name="Display Name"" >> $server_path_with_name
-                          echo "server_main_server_user="user"" >> $server_path_with_name
-                          echo "server_main_server_port="22"" >> $server_path_with_name
-                          echo "server_main_server_addr="192.168.1.1"" >> $server_path_with_name
                           echo "servers+=('main_server')" >> $server_path_with_name
+                          echo "server_names[\${servers[-1]}]=\"Display Name\"" >> $server_path_with_name
+                          echo "server_users[\${servers[-1]}]=\"user\"" >> $server_path_with_name
+                          echo "server_ports[\${servers[-1]}]=\"22\"" >> $server_path_with_name
+                          echo "server_addrs[\${servers[-1]}]=\"192.168.1.1\"" >> $server_path_with_name
                           echo "" >> $server_path_with_name
                         fi
                           echo -e "${prefix}${PURPLE}Editing File...${NOCOLOR}"
                           sleep .5
                           vim -f --not-a-term $server_path_with_name
-                          
-                          
+
+
                         echo -e "${prefix}${PURPLE}Finished Editing${NOCOLOR}"
                         echo -e "${prefix}${PURPLE}Relaunching Script${NOCOLOR}"
                         echo -e "${prefix}"
