@@ -68,11 +68,11 @@ alias router="ssh roki@192.168.1.1"
 alias motd="/etc/profile.d/motd.sh"
 alias emotd="sudo vim /etc/profile.d/motd.sh"
 
-alias myip="/home/roki/Scripts/publicIP.sh"
+alias myip="~/dotfiles/scripts/publicIP.sh"
 alias pubip="dig +short myip.opendns.com @resolver1.opendns.com"
 alias publicip="dig +short myip.opendns.com @resolver1.opendns.com"
 
-alias updatedns="sudo /home/roki/cronjobs/updateAllDnsRecords.sh"
+alias updatedns="sudo ~/cronjobs/updateAllDnsRecords.sh"
 alias downloads="cd /mnt/FatTerry/Downloads/Transmission"
 
 alias recordings="cd /mnt/raid5/recordings/"
@@ -80,7 +80,7 @@ alias recordings="cd /mnt/raid5/recordings/"
 alias temp="watch -n 0.1 sensors"
 alias temps="watch -n 0.1 sensors"
 
-alias revertinterfaces="sudo cp /home/roki/Documents/broken.interfaces /etc/network/interfaces"
+alias revertinterfaces="sudo cp ~/Documents/broken.interfaces /etc/network/interfaces"
 
 #========================================================
 #========================================================
@@ -90,10 +90,10 @@ alias revertinterfaces="sudo cp /home/roki/Documents/broken.interfaces /etc/netw
 #========================================================
 #========================================================
 alias dockers="cd /mnt/ServerBackup/docker/"
-alias testvpn="/home/roki/Scripts/testvpn.sh"
-alias fixvpn="/home/roki/Scripts/fixvpn.sh"
-alias updatedockers="/home/roki/Scripts/updateContainers.sh"
-alias updatecontainers="/home/roki/Scripts/updateContainers.sh"
+alias testvpn="~/dotfiles/scripts/testDockerVpn.sh"
+alias fixvpn="~/Scripts/fixvpn.sh"
+alias updatedockers="~/Scripts/updateContainers.sh"
+alias updatecontainers="~/Scripts/updateContainers.sh"
 alias dcu="docker-compose up"
 alias dce="sudo vim docker-compose.yml"
 

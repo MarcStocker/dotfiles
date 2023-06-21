@@ -72,9 +72,10 @@ sessions_prompt()
 		##echo -e "3. multipleterms   Jun 12 23:13:43  [322x454]"
 	done
 	echo -e "${prefix}"
-	echo -e "${prefix}${LIGHTGREEN}n. ${LIGHTGREEN}Add New Session${NOCOLOR}"
-	echo -e "${prefix}${LIGHTRED}d. ${LIGHTRED}Delete a Session${NOCOLOR}"
-	echo -e "${prefix}${LIGHTRED}x. ${LIGHTRED}Exit${NOCOLOR}"
+	echo -e "${prefix}${LIGHTGREEN}n. Add New Session${NOCOLOR}"
+	echo -e "${prefix}${ORANGE}o. Enable/Disable Options${NOCOLOR}"
+	echo -e "${prefix}${LIGHTRED}d. Delete a Session${NOCOLOR}"
+	echo -e "${prefix}${LIGHTRED}x. Exit${NOCOLOR}"
 
 
 	echo -en "${prefix}Select: ${GREEN}"
@@ -100,6 +101,13 @@ create_session () {
 	tmux new-session -s ${sessionName}
 	echo -en "${NOCOLOR}"
 	exit
+}
+
+set_options () {
+	echo -e "${prefix} Set Options:"
+
+
+  
 }
 
 kill_session () {
@@ -132,6 +140,9 @@ while true; do
 			;;
 		d | D)
 			kill_session
+			;;
+		d | D)
+			set_options
 			;;
 		r | R)
 			echo -e "${prefix}${PURPLE}Relaunching Script${NOCOLOR}"
