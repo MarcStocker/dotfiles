@@ -66,11 +66,13 @@ echo_prefix () {
 #   Loading End
 Loading () {
 	Spinning () {
-		# Example: 
-		#  [ INFO ] Loading [|]
-		#  [ INFO ] Loading [/]
-		#  [ INFO ] Loading [-]
-		#  [ INFO ] Loading [\]
+		## Example call to Loading:
+		# Loading Start
+		# stdout:  [ INFO ] Loading [|]
+		# stdout:  [ INFO ] Loading [/]
+		# stdout:  [ INFO ] Loading [-]
+		# stdout:  [ INFO ] Loading [\]
+		# Loading End
 		cursor=("|" "/" "-" "\\")
 		while ( : ); do
 			for i in ${!cursor[@]}; do
@@ -93,11 +95,3 @@ Loading () {
 	fi
 }
 
-echo_prefix "testing" "GREEN"
-echo
-
-## Example call to Loading:
-# Loading Start
-# sleep 5
-# Loading End
-# exit 1
