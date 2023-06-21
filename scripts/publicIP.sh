@@ -1,7 +1,8 @@
 source ~/dotfiles/scripts/shellTextVariables.sh
+
 ## Get the current external IP address
 getPublicIP () {
-	echo -en "Retrieving Public IP Address..."
+	echo -n "Retrieving Public IP Address..."
 	for i in {1..3}; do
 		case $i in
 			1 )
@@ -23,16 +24,16 @@ getPublicIP () {
 getPublicIP
 
 #Clear line
-#echo -en "\033[999D\033[K"
-echo -e "${CYAN}Public IP:${NOCOLOR}"
-echo $PUBLICIP
+echo -en "\033[999D\033[K"
+echo -e "${CYAN}${Undr}${OnPurple}Public IP:${NOCOLOR}"
+echo -e "${PURPLE}$PUBLICIP${NOCOLOR}"
 echo
-echo "${CYAN}Local IPs:${NOCOLOR}"
+echo -e "${CYAN}${Undr}${OnPurple}Local IPs:${NOCOLOR}"
 for i in {0..20}; do
 	ip --color a show enp${i}s0 2> /dev/null
 done
 echo
-echo "${CYAN}Virtual IPs:${NOCOLOR}"
+echo -e "${CYAN}${Undr}${OnPurple}Virtual IPs:${NOCOLOR}"
 for i in {0..20}; do
 	ip --color a show vmbr${i} 2> /dev/null
 done
