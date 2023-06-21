@@ -114,7 +114,7 @@ getVpnIP()
 
 getDockerIPs()
 {
-	PROWLARRIP=`docker exec jackett curl -s ifconfig.io 2> /dev/null`
+	PROWLARRIP=`docker exec prowlarr curl -s ifconfig.io 2> /dev/null`
 	QBITTORRENTIP=`docker exec qbittorrent curl -s ifconfig.io 2> /dev/null`
 	SONARRIP=`docker exec sonarr curl -s ifconfig.io 2> /dev/null`
 	RADARRIP=`docker exec radarr curl -s ifconfig.io 2> /dev/null`
@@ -128,18 +128,21 @@ echo -e "${prefix}${CYAN}===============================================${NOCOLO
 echo -e "${prefix}${CYAN}== ${NOCOLOR}Testing Docker containers attached to VPN ${CYAN}==${NOCOLOR}"
 echo -e "${prefix}${CYAN}===============================================${NOCOLOR}"
 echo -e "${prefix}${GREENCHECK} = ${GREEN}Connected to VPN${NOCOLOR}"
-echo -e "${prefix}${REDCROSS} = ${ORANGE}No Internet${NOCOLOR}"
+echo -e "${prefix}${REDCROSS} = ${ORANGE}No Internet/Not Running${NOCOLOR}"
 echo -e "${prefix}${FIRE} = ${RED}Not connected to VPN${NOCOLOR}"
 echo -e "${prefix}"
-echo -en "${prefix}Please wait..."
+#echo -en "${prefix}Please wait..."
+Loading Start
 
 getPublicIP
 getVpnIP
 getDockerIPs
 
+Loading End
+
 #Clear Please Wait line 
-echo -en "\033[999D\033[K"
-echo "Overseerr IP: ${OVERSEERRIP}"
+#echo -en "\033[999D\033[K"
+#echo "Overseerr IP: ${OVERSEERRIP}"
 
 echo -e "${prefix}${CYAN}-----------------------------------${NOCOLOR}"
 echo -e "${prefix}${CYAN}------${NOCOLOR}   Public IP Address   ${CYAN}------${NOCOLOR}"
