@@ -21,13 +21,21 @@ LIGHTPURPLE='\033[1;35m'
 LIGHTCYAN='\033[1;36m'
 WHITE='\033[1;37m'
 # ----------------------------------
+# tput colors (used with printf commands)
+# Refer to updatecontainers.sh for example
 # ----------------------------------
-
+tputRED=$(tput setaf 1)		
+tputGREEN=$(tput setaf 2)
+tputnormal=$(tput sgr0) 
+# ----------------------------------
 # ----------------------------------
 # Symbols
 # ----------------------------------
 GREENCHECK="${LIGHTGREEN}\u2705${NOCOLOR}"
 REDCROSS="\u274c"
+YELLOWHAZARD="${YELLOW}\U1F6AB${NOCOLOR}"
+WARNING="\U2620"
+FIRE="\U1F525"
 # ----------------------------------
 # ----------------------------------
 
