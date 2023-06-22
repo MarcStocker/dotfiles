@@ -321,9 +321,9 @@ harddrive () {
 
 		if [[ "${key}" = "OS" ]]; then
 			harddrives[OS]="/${DARKGRAY}(${harddrives[${key}]:1})${NOCOLOR}"
-			echo -e "${harddrives[$key]}	${tot_available}b	${tot_used}b	${tot_size}b	${tot_usedPerc}" | awk '{printf "   %-31s %7s %7s %7s %7s", $1, $2, $3, $4, $5}'
+			echo -e "${harddrives[$key]}	${Bold}${tot_available}b	${tot_used}b	${tot_size}b	${tot_usedPerc}" | awk '{printf "   %-31s %11s %7s %7s %7s", $1, $2, $3, $4, $5}'
 		else
-			echo -e "${harddrives[$key]}	${tot_available}b	${tot_used}b	${tot_size}b	${tot_usedPerc}" | awk '{printf "   %-20s %7s %7s %7s %7s", $1, $2, $3, $4, $5}'
+			echo -e "${harddrives[$key]}	${Bold}${tot_available}b	${tot_used}b	${tot_size}b	${tot_usedPerc}" | awk '{printf "   %-20s %11s %7s %7s %7s", $1, $2, $3, $4, $5}'
 		fi
 
 		#echo -e "Harddrive Key: 	${key}"
