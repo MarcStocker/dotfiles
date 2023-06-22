@@ -140,6 +140,12 @@ if yesNo; then
 fi
 
 
+echo -e "${Rst}${Bold}Which shell do you want to use?${Rst}"
+echo -e "1. Bash"
+echo -e "2. zsh"
+
+
+Shell: /bin/zsh
 
 
 
