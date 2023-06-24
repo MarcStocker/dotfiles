@@ -107,7 +107,7 @@ connect_prompt()
 
 connect()
 {
-    echo "Userchoice: $USERCHOICE"
+    #echo "Userchoice: $USERCHOICE"
         name=${server_names[${servers[$USERCHOICE]}]}
         user=${server_users[${servers[$USERCHOICE]}]}
         port=${server_ports[${servers[$USERCHOICE]}]}
