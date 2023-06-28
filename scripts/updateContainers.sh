@@ -411,7 +411,7 @@ echo -e "${prefix}${GREEN}===========================${NOCOLOR}"
 live="${RED}LIVE${GREY}"
 echo -e "${GREY}---------------------------------------------------------------------------------------${NOCOLOR}"
 echo -e "${GREY}   Docker Logs    $live    Docker Logs    $live   Docker Logs    $live    Docker Logs  ${NOCOLOR}"
-echo -e "${GREY}---------------------------------------------------------------------------------------${NOCOLOR}"
+echo -e "${GREY}--------------------------------------------------------------------------------------- Ctrl+Z/C to exit${NOCOLOR}"
 
 `docker logs -f ${allContainers[$USERCHOICE]}`
 
