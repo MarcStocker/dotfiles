@@ -1,5 +1,5 @@
 #!/bin/bash
-source /home/roki/dotfiles/scripts/shellTextVariables.sh
+source ~/dotfiles/scripts/shellTextVariables.sh
 # ----------------------------------
 # Colors
 # ----------------------------------
