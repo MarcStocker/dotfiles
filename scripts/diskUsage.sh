@@ -1,38 +1,49 @@
 #!/bin/bash
-source ~/dotfiles/scripts/shellTextVariables.sh
+#source ~/dotfiles/scripts/shellTextVariables.sh
 # ----------------------------------
 # Colors
 # ----------------------------------
-NOCOLOR='\033[0m'
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-ORANGE='\033[38;5;208m'
-BLUE='\033[0;34m'
-PURPLE='\033[0;35m'
-CYAN='\033[0;36m'
-LIGHTGRAY='\033[0;37m'
-DARKGRAY='\033[1;30m'
-LIGHTRED='\033[1;31m'
-LIGHTGREEN='\033[1;32m'
-YELLOW='\033[0;33m'
-LIGHTBLUE='\033[1;34m'
-LIGHTPURPLE='\033[1;35m'
-LIGHTCYAN='\033[1;36m'
-WHITE='\033[1;37m'
+TC="\033["
+NOCOLOR="${TC}0m"
+RED="${TC}0;31m"
+GREEN="${TC}0;32m"
+ORANGE="${TC}38;5;208m"
+BLUE="${TC}0;34m"
+PURPLE="${TC}0;35m"
+CYAN="${TC}0;36m"
+LIGHTGRAY="${TC}0;37m"
+LIGHTGREY="${TC}0;37m"
+DARKGRAY="${TC}1;30m"
+DARKGREY="${TC}1;30m"
+LIGHTRED="${TC}1;31m"
+LIGHTGREEN="${TC}1;32m"
+YELLOW="${TC}0;33m"
+LIGHTBLUE="${TC}1;34m"
+LIGHTPURPLE="${TC}1;35m"
+LIGHTCYAN="${TC}1;36m"
+WHITE="${TC}1;37m"
 
-REDHL='\033[1;41m'
-YELLOWHL='\033[1;43m'
-GREENHL='\033[1;42m'
+REDHL="${TC}1;41m"
+YELLOWHL="${TC}1;43m"
+GREENHL="${TC}1;42m"
 
-ERASELINE='\033[D\033[K'
-CLEARLINE='\033[D\033[K'
+Bold="${TC}1m"    # Bold text only, keep colors
+Undr="${TC}4m"    # Underline text only, keep colors
+Inv="${TC}7m"     # Inverse: swap background and foreground colors
+Reg="${TC}22;24m" # Regular text only, keep colors
+RegF="${TC}39m"   # Regular foreground coloring
+RegB="${TC}49m"   # Regular background coloring
+Rst="${TC}0m"     # Reset all coloring and style
 
-SAVECURSOR='\033[s'
-CURSORLOAD='\033[u'
-LOADCURSOR='\033[u'
+ERASELINE="${TC}D${TC}K"
+CLEARLINE="${TC}D${TC}K"
+
+SAVECURSOR="${TC}s"
+CURSORLOAD="${TC}u"
+LOADCURSOR="${TC}u"
 
 #############################################################################################
-# This script/function displays all harddrives on the system and info about their space
+# This script/function displays all storageDrive on the system and info about their space
 # The OS harddrive '/' will always be first. 
 # Following the OS will be every other drive that doesn't come from the /etc folder,
 # and will be sorted by total size, smallest-largest. 
@@ -75,7 +86,7 @@ LOADCURSOR='\033[u'
 # 2. Num of Indention spaces
 #    (Pass in any non-number in order to use arg 3 without changing the default arg 2)
 # 3. Change Indention character
-harddrive () { 
+storageDrives () { 
 
   indentNum=5
   indentChar=" "
@@ -89,7 +100,7 @@ harddrive () {
   str=$(printf "%${indentNum}s")
   indent="${NOCOLOR}${str// /${indentChar}${NOCOLOR}}"
 
-  # Which harddrives are we going to get data from?
+  # Which storageDrive are we going to get data from?
   # $ df -h | grep ^/
   #Filesystem      Size  Used Avail Use% Mounted on
   #/dev/sde1        87G   30G   53G  37% /
@@ -100,30 +111,27 @@ harddrive () {
   #/dev/md0         39T  959G   36T   3% /mnt/raid5
   #/dev/sdj1       9.1T  9.1T  115M 100% /mnt/FatTerry
 
-  declare -a harddrives
+  declare -a storageDrive
 
   #############################################################################################
-  # HARDCODE Drives you'd like to be informed of if they are DISCONNECT (unmounted). 
+  # HARDCODE Drives you'd like to be informed of if they are DISCONNECTED (unmounted). 
   # Otherwise, it's all dynamic and you'll only see drives that are currently mounted.
   # 
   # Hardcoded drives will appear after the OS, but before everything else in the order they're entered.
   #
   # USE THE "MOUNT LOCATION" FOR THESE ENTRIES, examples follow.
   #############################################################################################
-  ## harddrives+=("/mnt/FatTerry")
-  ## harddrives+=("/mnt/raid5")
-  ## harddrives+=("etc...")
-  #############################################################################################
-
   #-----------------------------------------------------------#
   #---------     Enter Hardcoded drives here    --------------#
   #-----------------------------------------------------------#
-  #harddrives+=("/mnt/FatTerry")
+  # storageDrive+=("/mnt/FatTerry")
+  # storageDrive+=("/mnt/raid5")
+  # storageDrive+=("etc...")
   #-----------------------------------------------------------#
 
   # Gotta add in the '|' deliminator for any hardcoded drives
-  for i in "${!harddrives[@]}"; do
-    harddrives[$i]="|${harddrives[$i]}"
+  for i in "${!storageDrive[@]}"; do
+    storageDrive[$i]="|${storageDrive[$i]}"
   done
 
 
@@ -134,18 +142,18 @@ harddrive () {
     fReverse="-r"
   fi
 
-  # Read in all mounted harddrives
+  # Read in all mounted storageDrive
   while IFS= read -r line; do
     #echo -e "$line"
     filesystem=$(echo "$line" | awk '{print $1}')
     mount_point=$(echo "$line" | awk '{print $6}')
     # Check if the value already exists in the array (From Hardcoded drives)
-    if [[ " ${harddrives[*]} " != *"$mount_point"* ]]; then
+    if [[ " ${storageDrive[*]} " != *"$mount_point"* ]]; then
       #echo "ADDING: $filesystem | $mount_point"
-      harddrives+=("$filesystem|$mount_point")
+      storageDrive+=("$filesystem|$mount_point")
     fi
   done < <( df | grep ^/ | sort -n -k 3 $fReverse )
-  #echo "There are a total of ${#harddrives[@]} harddrives"
+  #echo "There are a total of ${#storageDrive[@]} storageDrive"
 
 
   # Echo the Header
@@ -160,7 +168,7 @@ harddrive () {
   printDriveGraphic $filesystem $mount_point
 
   # Print the rest of the drives
-  for key in "${harddrives[@]}"; do
+  for key in "${storageDrive[@]}"; do
     filesystem=$(echo "$key" | cut -d "|" -f 1)
     mount_point=$(echo "$key" | cut -d "|" -f 2)
     if [[ $mount_point == "/" ]]; then
@@ -210,7 +218,7 @@ printDriveGraphic () {
     output="${filesystem}  ${Bold}${tot_available}  ${tot_used}  ${tot_size}  ${tot_usedPerc}"
     echo -e "${output}" | awk -v indent="$indent" '{printf indent "%-31s %11s %7s %7s %7s", $1, $2, $3, $4, $5}'
   else
-    output="${filesystem}  ${Bold}${tot_available}  ${tot_used}  ${tot_size}  ${tot_usedPerc}"
+    output="${mount_point}  ${Bold}${tot_available}  ${tot_used}  ${tot_size}  ${tot_usedPerc}"
     echo -e "${output}" | awk -v indent="$indent" '{printf indent "%-20s %11s %7s %7s %7s", $1, $2, $3, $4, $5}'
   fi
   echo 
@@ -261,7 +269,5 @@ printDriveGraphic () {
 
 # Only run if explicitly told to do so, otherwise, this file is basically just a function. 
 if [[ $1 == "list" ]]; then
-  echo -e "${PURPLE}═════════════════════════════════════════════════════════${NOCOLOR}"
-  harddrive ${@:2}
-  echo -e "${PURPLE}═════════════════════════════════════════════════════════${NOCOLOR}"
+  storageDrives ${@:2}
 fi
