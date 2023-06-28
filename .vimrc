@@ -12,6 +12,7 @@ set tabstop=2     " set tabs to be 2 characters wide
 set shiftwidth=2  " similar to tabstop(most likely for autoindent)
 set expandtab     " Replace tabs with spaces (2 spaces since tabstop = 2)
 set showmode      " puts insert message at bottom on screen when inserting
+set hlsearch			" Highlight all matching search results
 set ruler         " show the cursor position all the time
 
 "================  Assign new Comands  ================  
