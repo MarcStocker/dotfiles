@@ -43,11 +43,13 @@ LOADCURSOR='\033[u'
 # You can save hardcoded drives (the location where they should be mounted) as well
 # 
 #############################################################################################
-# Example output (Real output will be colorised): 
+# Example output (Real output will be colorized): 
 ##  user@machine:~/dotfiles/scripts$ ./diskUsage.sh list
 ##    Filesystems             Free    Used    Size   Used%
 ##    /(dev/sde1)              17G     66G     87G     80%
 ##    [━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━----------]
+##    /mnt/NanoDrive is UNMOUNTED...
+##    [xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]
 ##    /mnt/ServerBackup        15G    202G    229G     94%
 ##    [━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━---]
 ##    /mnt/plexMetaData        15G    207G    234G     94%
@@ -100,14 +102,20 @@ harddrive () { # the word "Reverse" or "r" can be passed in to reverse the hardd
   #-----------------------------------------------------------
   #---------     Enter Hardcoded drives here    --------------
   #-----------------------------------------------------------
-  # harddrives+=("/mnt/FatTerry")
-  # harddrives+=("/mnt/raid5")
+  #harddrives+=("/mnt/FatTerry")
+  #harddrives+=("/mnt/raid5")
   #-----------------------------------------------------------
 
   # Gotta add in the '|' deliminator for any hardcoded drives
   for i in "${!harddrives[@]}"; do
     harddrives[$i]="|${harddrives[$i]}"
   done
+
+
+
+
+
+
 
   # Reverse drive order if requested
   fReverse=""
@@ -162,14 +170,20 @@ printHddGraphic () {
   fi
 
   # Handle unmounted drives (that aren't the OS, cause techincally it's mount point is '/', not '/dev/xxx#')
-	if ! lsblk -f | grep -q "${mount_point}"; then
-		if [[ ${mount_point} == *"/etc/"* ]]; then
-			return
-		fi
+	if  ! lsblk -f | grep -q "${mount_point}" || [ -z "${mount_point// }" ] ; then
 		if [[ "${filesystem}" != '/' ]]; then
-      #echo "${filesystem}"
-			echo -e "  ${mount_point} is not mounted..."
-			echo -e "  ${LIGHTGRAY}[${REDHL}${DARKGRAY}xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx${NOCOLOR}${LIGHTGRAY}]${NOCOLOR}"
+      if [[ ${mount_point} == *"/etc/"* ]]; then
+        return
+      fi
+      #SPACES
+			echo -e "   ${filesystem} is ${RED}${Undr}${Bold}UNMOUNTED${NOCOLOR}..."
+			#echo -e "   ${LIGHTGRAY}[${REDHL}${DARKGRAY}xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx${NOCOLOR}${LIGHTGRAY}]${NOCOLOR}"
+			echo -en "   ${LIGHTGRAY}[${REDHL}${DARKGRAY}"
+      
+      str=$(printf "%50s")
+      echo -en "${str// /x}${NOCOLOR}"
+
+      echo -e "${NOCOLOR}${LIGHTGRAY}]${NOCOLOR}"
 			return
 		fi	
 		return
