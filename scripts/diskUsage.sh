@@ -84,17 +84,13 @@ LOADCURSOR="${TC}u"
 # 1. "Reverse" flag to reverse harddrive order based on total size. Either "Reverse" or "r".
 #    (Pass in anything else in order to use args 2 and 3)
 #     -r
-#     --reverse
 # 2. Num of Indention spaces
 #    (Pass in any non-number in order to use arg 3 without changing the default arg 2)
 #     -n
 # 3. Change Indention character
 #     -c
-#     --character
 # 4. Order. Default is Total Disk Space. Other options; Size, Used, Avail, Perc.
 #     -o
-#     --order size
-#     --order used
 
 storageDrives () { 
   fReverse=''
@@ -103,7 +99,7 @@ storageDrives () {
   order='avail'
   while getopts 'hdlrn:c:o:' flag; do
     case "${flag}" in
-      h | d) echo -n ;;
+      l | h | d) echo -n ;;
       r) fReverse="-r" ;; # Reverse flag for `sort` command
       n) indentNum="${OPTARG}" ;;
       c) indentChar="${OPTARG}" ;;
@@ -189,8 +185,9 @@ storageDrives () {
 
   # Echo the Header
   echo -en "${GREEN}"
-  formatting="${DARKGREY}${OnWhite}${Inv}${Undr}${Bold}"
-  echo -en "${formatting}Filesystems  Free  Used  Size  Used%" | awk -v indent="${indent}" '{printf indent "%-44s %7s %7s %7s %7s", $1, $2, $3, $4, $5}'
+  #formatting="${DARKGREY}${OnWhite}${Inv}${Undr}${Bold}"
+  echo -en "Filesystems  Free  Used  Size  Used%" | awk -v indent="${indent}" '{printf indent "%-20s %7s %7s %7s %7s", $1, $2, $3, $4, $5}'
+  #echo -e "\n  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
   echo -e "${NOCOLOR}"
 
   # Print OS drive first!!
