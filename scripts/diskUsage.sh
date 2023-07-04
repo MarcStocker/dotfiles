@@ -1,5 +1,5 @@
 #!/bin/bash
-#source ~/dotfiles/scripts/shellTextVariables.sh
+source ~/dotfiles/scripts/shellTextVariables.sh
 # ----------------------------------
 # Colors
 # ----------------------------------
@@ -80,22 +80,45 @@ LOADCURSOR="${TC}u"
 #
 #############################################################################################
 
-# Accepts 3 arguments:
+# Accepts 4 arguments:
 # 1. "Reverse" flag to reverse harddrive order based on total size. Either "Reverse" or "r".
 #    (Pass in anything else in order to use args 2 and 3)
+#     -r
+#     --reverse
 # 2. Num of Indention spaces
 #    (Pass in any non-number in order to use arg 3 without changing the default arg 2)
+#     -n
 # 3. Change Indention character
-storageDrives () { 
+#     -c
+#     --character
+# 4. Order. Default is Total Disk Space. Other options; Size, Used, Avail, Perc.
+#     -o
+#     --order size
+#     --order used
 
-  indentNum=5
-  indentChar=" "
-  if [[ ! -z "${2// }" && $2 =~ ^[0-9]+$  ]]; then
-    indentNum=$2
-  fi
-  if [[ ! -z "${3// }" ]]; then
-    indentChar="$3"
-  fi
+storageDrives () { 
+  fReverse=''
+  indentNum='5'
+  indentChar=' '
+  order='avail'
+  while getopts 'hdlrn:c:o:' flag; do
+    case "${flag}" in
+      h | d) echo -n ;;
+      r) fReverse="-r" ;; # Reverse flag for `sort` command
+      n) indentNum="${OPTARG}" ;;
+      c) indentChar="${OPTARG}" ;;
+      o) echo -e "order flag: -$flag ${OPTARG}";order="${OPTARG}" ;;
+      *) echo -e "${ORANGE}BAD ARUGMENT: ${NOCOLOR}-${flag} ${OPTARG}" 
+         exit 1 ;;
+    esac
+  done
+
+  #echo "Options: ${@}"
+  #echo -e "fReverse:      $fReverse"
+  #echo -e "indentNum(n):  $indentNum"
+  #echo -e "indentChar(c): $indentChar"
+  #echo -e "order(o):      $order"
+
   # Dynamically create the number of index chars specified
   str=$(printf "%${indentNum}s")
   indent="${NOCOLOR}${str// /${indentChar}${NOCOLOR}}"
@@ -135,12 +158,20 @@ storageDrives () {
   done
 
 
-
-  # Reverse drive order if requested
-  fReverse=""
-  if [[ ${1^^} == "REVERSE" || ${1^^} == "R" ]]; then
-    fReverse="-r"
-  fi
+  case ${order^^} in 
+    *AVAIL* | *FREE*) 
+      order=4
+      ;;
+    *USED*) 
+      order=3
+      ;;
+    *PERC*) 
+      order=5
+      ;;
+    *SIZE*) 
+      order=2
+      ;;
+  esac
 
   # Read in all mounted storageDrive
   while IFS= read -r line; do
@@ -152,14 +183,14 @@ storageDrives () {
       #echo "ADDING: $filesystem | $mount_point"
       storageDrive+=("$filesystem|$mount_point")
     fi
-  done < <( df | grep ^/ | sort -n -k 3 $fReverse )
+  done < <( df | grep ^/ | sort -n -k $order $fReverse )
   #echo "There are a total of ${#storageDrive[@]} storageDrive"
 
 
   # Echo the Header
-  echo -en "${LIGHTGRAY}"
-  #SPACES
-  echo -en "Filesystems  Free  Used  Size  Used%" | awk -v indent="${indent}" '{printf indent "%-20s %7s %7s %7s %7s", $1, $2, $3, $4, $5}'
+  echo -en "${GREEN}"
+  formatting="${DARKGREY}${OnWhite}${Inv}${Undr}${Bold}"
+  echo -en "${formatting}Filesystems  Free  Used  Size  Used%" | awk -v indent="${indent}" '{printf indent "%-44s %7s %7s %7s %7s", $1, $2, $3, $4, $5}'
   echo -e "${NOCOLOR}"
 
   # Print OS drive first!!
@@ -267,7 +298,35 @@ printDriveGraphic () {
 # Call Script directly via pass through variable #
 ##################################################
 
+display="false"
+while getopts 'hdlrn:c:o:' flag; do
+  case "${flag}" in
+    h) echo "$(basename "$0") [-h] [-d/l] [-r] [-n #] [-c X] [-o string]
+  Options:
+    -d  MUST BE USED TO DISPLAY OUTPUT: If calling the script file directly (ex. ./$(basename "$0"), this will display output. Otherwise, use it as a function in another script
+    -l  Same as -d option
+
+    -h  Show this help dialog
+
+    -o  How to order the drives. Avail options: free, used, avail, perc. (Default: avail)
+    -r  Reverse order of drives 
+
+    -n  Set number of leading prefix characters/how much to indent final output (Default: ' ')
+    -c  Set the character to be used as the prefix character (Default: 4)"
+      exit 0
+      ;;
+    d|l|r|n|c|o) display="true" ;;
+    *) echo -e "${ORANGE}BAD ARUGMENT: ${NOCOLOR}-${flag} ${OPTARG}" 
+       exit 1 ;;
+  esac
+done
+
+
 # Only run if explicitly told to do so, otherwise, this file is basically just a function. 
-if [[ $1 == "list" ]]; then
-  storageDrives ${@:2}
+if [[ $display == "true" ]]; then
+  OPTIND=1  # Reset the index of the next option to be processed
+  OPTARG="" # Clear the value of the last option argument
+  unset opt
+
+  storageDrives ${@}
 fi
