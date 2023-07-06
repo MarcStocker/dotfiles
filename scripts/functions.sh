@@ -1,3 +1,4 @@
+source /home/roki/dotfiles/scripts/shellTextVariables.sh
 # ----------------------------------
 # Colors
 # ----------------------------------
@@ -94,4 +95,28 @@ Loading () {
 		echo -en "\r"
 	fi
 }
+
+print_centered_underlined () {
+  print_text=$@
+  text_len=${#print_text}
+  screen_width=`tput cols`
+  start_pos=$(( $screen_width / 2 - $text_len / 2 ))
+  tail_end=$(( $screen_width - ($start_pos + $text_len) ))
+
+  #echo -e "print text : $print_text"
+  #echo -e "Text Length: $text_len"
+  #echo -e "Screen Wid : $screen_width"
+  #echo -e "Start Pos  : $start_pos"
+  #echo -e "Tail Pos   : $tail_end"
+
+  echo -en "${Undr}${Bold}"
+  str=$(printf "%${start_pos}s")
+  echo -en "${Undr}${str// / }"
+
+  echo -en "$print_text"
+
+  str=$(printf "%${tail_end}s")
+  echo -en "${Undr}${str// / }"
+  echo -en "${NOCOLOR}"
+ }
 
