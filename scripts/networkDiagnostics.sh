@@ -7,13 +7,13 @@ interface2="enp8s0"
 
 
 interfaceUp () {
-	echo -e "-${GREEN}UP${NOCOLOR}"
-	sudo ifup ${1}
+	echo -e "-${GREEN}UP${NOCOLOR} $1"
+	sudo ifup $1
 	echo -en "${NOCOLOR}"
 }
 interfaceDown () {
-	echo -e "-${RED}Down${NOCOLOR}"
-	sudo ifdown ${1}
+	echo -e "-${RED}Down${NOCOLOR} $1"
+	sudo ifdown $1
 	echo -en "${NOCOLOR}"
 }
 
@@ -27,14 +27,18 @@ restartInterfaces () {
 	interfaceUp ${interface1}
 
 	echo -e "${CYAN}Restarting: ${NOCOLOR}${interface2}"
-	interfaceDown ${interface2}
-	interfaceUp ${interface2}
+	interfaceDown "${interface2}"
+	interfaceUp "${interface2}"
 }
 
 flushNetworking () {
 	echo -e "${GREEN}===============================${NOCOLOR}"
 	echo -e "${GREEN}==      Flush   IP   Addr    ==${NOCOLOR}"
 	echo -e "${GREEN}===============================${NOCOLOR}"
+  echo -e "${RED}This will drop your SSH connection${NOCOLOR}"
+
+  echo -e ${ORANGE}Killing SSH Connection......... NOW!${NOCOLOR}}
+  pkill ssh
 
 	echo -en "${YELLOW}"
 	sudo ip addr flush $interface1
@@ -98,28 +102,42 @@ editFile () {
 			;;
 	esac
 
-  vim -f --not-a-term $theFile
+  sudo -E vim -f --not-a-term $theFile
 }
 
 listInterfaceDevices () {
 	dashes=$(printf "%80s")
 	echo -e "${DARKGREY}${dashes// /=}\n${dashes// /=} ${NOCOLOR}"
-  ip -c a | head -n 25
+  echo -e "${PURPLE}Localhost:${NOCOLOR}"
+  ip --color a show lo 2> /dev/null
+  echo
+  echo -e "${PURPLE}Phsyical NIC IPs:${NOCOLOR}"
+  for i in {0..20}; do
+    ip --color a show enp${i}s0 2> /dev/null
+  done
+  echo
+  echo -e "${PURPLE}Virtual Bridge IPs:${NOCOLOR}"
+  for i in {0..20}; do
+    ip --color a show vmbr${i} 2> /dev/null
+  done
 	echo -e "${DARKGREY}${dashes// /=}\n${dashes// /=} ${NOCOLOR}"
 	echo
 }
+
+#Clear line
+#echo -en "\033[999D\033[K"
 
 prompt() {
   echo -e "${PURPLE}What action would you like to perform on the Network?${NOCOLOR}"
 	
 	echo -e "${GREEN}------------  Test/Diagnostic  --------------${NOCOLOR}"
 	echo -e "1. Test Ping"
-	echo -e "2. Show all Interfaces ${GREY}(ip a)${NOCOLOR}"
+	echo -e "2. Show [Relevant] Interfaces ${GREY}(ip a)${NOCOLOR}"
 	echo -e "3. Bring all Interfaces ${GREEN}UP${NOCOLOR}"
 	echo -e "${YELLOW}-----------     Edit Files    --------------${NOCOLOR}"
-	echo -e "4. Edit Interwork Files${NOCOLOR}"
+	echo -e "4. Edit Network Files${NOCOLOR}"
 	echo -e "${YELLOW}------     Restart/Flush Network    --------${NOCOLOR}"
-	echo -e "5. Flush IP Addr ${GREY}(ip addr flush/system ctl restart networking${NOCOLOR}"
+	echo -e "5. Flush IP Addr ${GREY}(ip addr flush/system ctl restart networking)${NOCOLOR}"
 	echo -e "6. Restart all Interfaces${NOCOLOR}"
 	echo -e "7. Bring all Interfaces ${RED}DOWN${NOCOLOR}"
 	echo -e "E. Abort"
@@ -143,7 +161,8 @@ while true; do
 			elif [[ $USERCHOICE -eq 2 ]]; then # Restart Interfaces
 				listInterfaceDevices
 			elif [[ $USERCHOICE -eq 3 ]]; then # Restart Interfaces
-				interfaceUp
+				interfaceUp $interface1
+				interfaceUp $interface2
 			elif [[ $USERCHOICE -eq 4 ]]; then # Restart Interfaces
 				editFile
 			elif [[ $USERCHOICE -eq 5 ]]; then # Interfaces UP

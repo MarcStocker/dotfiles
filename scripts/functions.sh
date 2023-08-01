@@ -119,4 +119,3 @@ print_centered_underlined () {
   echo -en "${Undr}${str// / }"
   echo -en "${NOCOLOR}"
  }
-

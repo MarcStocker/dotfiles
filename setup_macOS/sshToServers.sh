@@ -61,6 +61,24 @@ prefix="${GREY}[ ${CYAN}SSH ${GREY}]${NOCOLOR} "
 
 trap '{ rm -f -- "ssh.error"; }' EXIT
 
+print_centered_underlined () {
+  print_text=$@
+  text_len=${#print_text}
+  screen_width=`tput cols`
+  start_pos=$(( $screen_width / 2 - $text_len / 2 ))
+  tail_end=$(( $screen_width - ($start_pos + $text_len) ))
+
+  echo -en "${Undr}${Bold}"
+  str=$(printf "%${start_pos}s")
+  echo -en "${Undr}${str// / }"
+
+  echo -en "$print_text"
+
+  str=$(printf "%${tail_end}s")
+  echo -en "${Undr}${str// / }"
+  echo -en "${NOCOLOR}"
+ }
+
 
 connect_prompt()
 {
@@ -254,6 +272,7 @@ done
 connect
 
 exit_status
+print_centered_underlined "SSH CONNECTION CLOSED"
 
 exit
 kill -9 $PPID

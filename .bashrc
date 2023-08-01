@@ -63,14 +63,12 @@ alias reboot="sudo shutdown -r 0"
 alias restart="sudo shutdown -r 0"
 
 alias server="~/dotfiles/scripts/sshToServers.sh"
-alias router="ssh roki@192.168.1.1"
+
+alias tmuxh="~/dotfiles/scripts/tmuxHelper.sh"
+alias htmux="~/dotfiles/scripts/tmuxHelper.sh"
 
 alias motd="/etc/profile.d/motd.sh"
 alias emotd="sudo vim /etc/profile.d/motd.sh"
-
-alias myip="~/dotfiles/scripts/publicIP.sh"
-alias pubip="dig +short myip.opendns.com @resolver1.opendns.com"
-alias publicip="dig +short myip.opendns.com @resolver1.opendns.com"
 
 alias updatedns="sudo ~/cronjobs/updateAllDnsRecords.sh"
 alias downloads="cd /mnt/FatTerry/Downloads/Transmission"
@@ -81,6 +79,31 @@ alias temp="watch -n 0.1 sensors"
 alias temps="watch -n 0.1 sensors"
 
 alias revertinterfaces="sudo cp ~/Documents/broken.interfaces /etc/network/interfaces"
+
+# Network diag
+alias networkdiag="~/dotfiles/scripts/networkDiagnostics.sh"
+alias netdiag="~/dotfiles/scripts/networkDiagnostics.sh"
+
+alias ipa="ip -c a | head -n 25"
+alias network="cd /etc/network/"
+alias interfaces="sudo vim /etc/network/interfaces"
+
+alias myip="~/dotfiles/scripts/publicIP.sh"
+alias pubip="dig +short myip.opendns.com @resolver1.opendns.com"
+alias publicip="dig +short myip.opendns.com @resolver1.opendns.com"
+
+# Samba 
+alias sambaedit="sudo vim /etc/samba/smb.conf"
+alias sambals="sudo smbclient -L localhost"
+alias sambarestart="sudo systemctl restart smbd; sudo service smbd restart"
+alias sambatest="testparm /etc/samba/smb.conf"
+alias sambalogs="sudo less /var/log/samba/smbd.log"
+
+# Disk Usage Script
+alias disk="~/dotfiles/scripts/diskUsage.sh -d -n 2"
+alias space="~/dotfiles/scripts/diskUsage.sh -d -n 2" 
+alias diskr="~/dotfiles/scripts/diskUsage.sh -d -r"
+
 
 #========================================================
 #========================================================
@@ -121,8 +144,25 @@ alias otautulli="firefox localhost:3579"
 
 # Wireguard Commands
 alias wg="docker exec wireguard wg"
-alias wireguard="cd /mnt/ServerBackup/docker/wireguard/config/"
+alias wireguard="cd /mnt/ServerBackup/docker/storage/wireguard/config/"
 
+
+# Frigate Docker Commands
+alias frigate="sudo vim /mnt/ServerBackup/docker/storage/frigate/config.yml"
+alias frigatelogs="docker logs -f frigate"
+
+
+#========================================================
+#========================================================
+#
+# Proxmox Commands
+#
+#========================================================
+#========================================================
+
+alias vms="sudo cat /etc/pve/.vmlist"
+alias vm="sudo qm"
+alias stopvm="sudo qm stop"
 
 
 
