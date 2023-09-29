@@ -23,7 +23,7 @@ If Not objFSO.FileExists(localScriptPath) Then
     objHTTP.send
 
     ' Check if the download was successful (status code 200)
-    If objHTTP.Status = 201 Then
+    If objHTTP.Status = 200 Or objHTTP.Status = 201 Then
         ' Save the downloaded script to the local path
         Set objFile = objFSO.CreateTextFile(localScriptPath, True)
         objFile.Write objHTTP.responseText
