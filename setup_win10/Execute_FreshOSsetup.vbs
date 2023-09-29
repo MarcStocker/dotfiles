@@ -2,7 +2,7 @@
 '       If it does not exist locally, it will download it from GitHub
 '       and then immediately run the newly downloaded file
 
-Set objShell = CreateObject("WScript.Shell")
+Set objShell = CreateObject("Shell.Application")
 
 ' Get the path to the folder where the VBA script is located
 scriptFolder = Left(WScript.ScriptFullName, InStrRev(WScript.ScriptFullName, "\"))
@@ -22,7 +22,7 @@ If Not objFSO.FileExists(localScriptPath) Then
     objHTTP.Open "GET", remoteScriptURL, False
     objHTTP.send
 
-    ' Check if the download was successful (status code 200)
+    ' Check if the download was successful (status code 200 or 201)
     If objHTTP.Status = 200 Or objHTTP.Status = 201 Then
         ' Save the downloaded script to the local path
         Set objFile = objFSO.CreateTextFile(localScriptPath, True)
@@ -32,20 +32,15 @@ If Not objFSO.FileExists(localScriptPath) Then
     Else
         ' Display an error message if the download fails
         WScript.Echo "Error: Unable to download the PowerShell script. Status code: " & objHTTP.Status
+        WScript.Echo
+        WScript.Echo "Please move this script to a folder other than 'Downloads'."
         Set objFSO = Nothing
         WScript.Quit
     End If
 End If
 
-' Create a command to run PowerShell as administrator with the script
-psCommand = "powershell.exe -ExecutionPolicy Bypass -NoProfile -File """ & localScriptPath & """"
-
-' Create a constant for the normal window style
-Const NormalWindow = 1
-
-' Run the PowerShell script with administrative privileges in a visible window
-objShell.Run psCommand, NormalWindow, True
+' Run the PowerShell script with elevated privileges
+objShell.ShellExecute "powershell.exe", "-ExecutionPolicy Bypass -NoProfile -File """ & localScriptPath & """", "", "runas", 1
 
 ' Clean up
 Set objFSO = Nothing
-Set objHTTP = Nothing
