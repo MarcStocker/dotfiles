@@ -333,7 +333,6 @@ function Print-ChocolateyProgramsList {
     $columnWidth = 36
     $columnNumWidth = (($AllChocoPrograms.Count).ToString().Length) + 2
     $columnCount = 2
-
     Write-Host "List of Chocolatey Programs to Install:" -ForegroundColor Cyan
     foreach ($i in 0..($AllChocoPrograms.Count - 1)) {
         $number = $i + 1
@@ -372,6 +371,10 @@ function Print-ChocolateyProgramsList {
     $userInput = Read-Host "Program to Enable/Disable"
     # Exit the loop if the user enters 'x'
     if ($userInput -eq 'x') { 
+        # Create APPDATA Folders 
+        if (-not (Test-Path -Path $backupSaveFolder -PathType Container)) {
+            New-Item -Path $backupSaveFolder -ItemType Directory -ErrorAction SilentlyContinue | Out-Null
+        }
         # Save the array to a file for future reference 
         $global:ChocoPrograms | Out-File -FilePath $selectedProgramsFilePath -Encoding UTF8 
         $global:ChocoPrograms | Out-File -FilePath $selectedProgramsFilePathBackup -Encoding UTF8 
