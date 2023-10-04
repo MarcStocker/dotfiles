@@ -24,6 +24,7 @@ if (-not (Test-Path -Path $backupSaveFolder -PathType Container)) {
 # Initialize variables for ChocoPrograms and AllChocoPrograms
 $global:ChocoPrograms    = @()
 $global:AllChocoPrograms = @()
+$global:InitialAllChocoPrograms = @()
 
 
 # Check if the ".allPrograms.save" file exists locally and read its contents if it does
@@ -42,7 +43,7 @@ elseif (Test-Path -Path "$allProgramsFilePathBackup" -PathType Leaf) {
 # Create new AllChocoPrograms array and save files
 else {
     # Manually create the program list
-    $AllChocoPrograms = @(
+    $global:InitialAllChocoPrograms = @(
         "GoogleChrome",
         "firefox",
         "vivaldi",
@@ -112,6 +113,8 @@ else {
         "nearby-share",
         "hwinfo.install"
     )
+
+    $global:AllChocoPrograms = $global:InitialAllChocoPrograms
 
     # Write the file locally and in the APPDATA backup folder
     $global:AllChocoPrograms | Out-File -FilePath $allProgramsFilePath -Encoding UTF8
@@ -408,7 +411,7 @@ function Toggle-Program {
         }
     } else {
         Write-Host "Invalid program number. Please enter a valid number. $ProgramNumber"
-        Enter-To-Continue
+        EnterToContinue
     }
 
     # Sorting the array, so it remains sorted after each toggle
@@ -663,6 +666,7 @@ function setWallpaper {
 
 function dialogSystem {
     $exitKey = 'x'
+
     $options = @(
         "Rename Computer",
         "Set UAC Level (0 or 3)",
@@ -679,11 +683,20 @@ function dialogSystem {
         Clear-Host
         Format-StringInTemplate "System Settings"
 
+        # Name of the computer BEFORE a reboot
+        $currentComputerName = $env:COMPUTERNAME
         # Display menu options
         Write-Host "Select an option:"
         for ($i = 0; $i -lt $options.Count; $i++) {
             Write-Host "$($i + 1). " -ForegroundColor Green -NoNewLine
-            Write-Host "$($options[$i])"
+            if ($options[$i] -eq "Rename Computer") {
+                Write-Host "$($options[$i])" -NoNewLine
+                Write-Host " [$currentComputerName]" -ForegroundColor Yellow 
+            }
+
+            else {
+                Write-Host "$($options[$i])"
+            }
         }
         Write-Host ""
         Write-Host "X. " -ForegroundColor Green -NoNewLine
@@ -717,23 +730,37 @@ function dialogSystem {
 
 function dialogPrograms {
     $exitKey = 'x'
-    $options = @(
+    $chocoOptions = @(
         "Install Chocolatey",
-        "Chocolatey: Install Programs",
-        "Chocolatey: List --- Toggle Programs to Install"
+        "Install Programs",
+        "List Programs/Select Programs to Install"
         #"Chocolatey: Add/Remove Programs from ALL list"
     )
     while ($true) {
         # Clear the screen
         #title-clearScreen
         Clear-Host
-        Format-StringInTemplate "System Settings"
+        Format-StringInTemplate "Install Windows 10 Programs"
 
-        # Display menu options
-        Write-Host "Select an option:"
-        for ($i = 0; $i -lt $options.Count; $i++) {
+        # Display menu options for Chocolatey
+        Write-Host "            Chocolatey Management            " -BackgroundColor Black
+        Write-Host ""
+        for ($i = 0; $i -lt $chocoOptions.Count; $i++) {
             Write-Host "$($i + 1). " -ForegroundColor Green -NoNewLine
-            Write-Host "$($options[$i])"
+            # Print out number of Selected/All Available Programs
+            if ($chocoOptions[$i] -eq "Install Programs" ) {
+                $numInstallPrograms = $Global:ChocoPrograms.Count
+                $numAllPrograms = $Global:AllChocoPrograms.Count
+                Write-Host "$($chocoOptions[$i])" -NoNewLine
+                Write-Host " " -NoNewLine -ForegroundColor DarkGray
+                Write-Host "[" -NoNewLine -ForegroundColor DarkGray -BackgroundColor Black
+                Write-Host "$numInstallPrograms" -NoNewLine -ForegroundColor DarkGreen  -BackgroundColor Black
+                Write-Host "/" -NoNewLine -ForegroundColor DarkGray -BackgroundColor Black
+                Write-Host "$numAllPrograms" -NoNewLine -ForegroundColor DarkGreen  -BackgroundColor Black
+                Write-Host "]" -ForegroundColor DarkGray -BackgroundColor Black
+            } else {
+                Write-Host "$($chocoOptions[$i])"
+            }
         }
         Write-Host ""
         Write-Host "X. " -ForegroundColor Green -NoNewLine
@@ -797,6 +824,7 @@ function Remove-FolderAndContents {
     } else {
         Write-Host "DOES NOT EXIST:   File  $selectedProgramsFilePath'" -ForegroundColor green
     }
+    $global:AllChocoPrograms = $global:InitialAllChocoPrograms
 }
 
 # Example usage:
@@ -896,31 +924,11 @@ while ($true) {
     switch ($selectedOption) {
         1 { dialogSystem }
         2 { dialogPrograms }
-        3 { enableWindowsFeatures }
+        3 { backupStartMenu }
         4 { Remove-FolderAndContents -backupSaveFolder $backupSaveFolder -allProgramsFilename $allProgramsFilename -selectedProgramsFilename selectedProgramsFilename}
         0 { test }
         default { Write-Host "Invalid option. Please select a valid option." -ForegroundColor Red }
     }
     EnterToContinue
     Write-Host ""
-}
-
-
-
-
-# Example usage
-if (Get-YesNoInput "Do you want to rename the PC?") {
-    Rename-ComputerWithPrompt
-}
-title-clearScreen
-if (Get-YesNoInput "Do you want to change the UAC level?") {
-    Set-UACLevel
-}
-title-clearScreen
-if (Get-YesNoInput "Do you want to Install Chocolately?") {
-    Install-Chocolatey
-}
-title-clearScreen
-if (Get-YesNoInput "Do you want to Install All Programs using Chocolately?") {
-    Install-Programs
 }
