@@ -381,6 +381,8 @@ function Print-ChocolateyProgramsList {
         if (-not (Test-Path -Path $backupSaveFolder -PathType Container)) {
             New-Item -Path $backupSaveFolder -ItemType Directory -ErrorAction SilentlyContinue | Out-Null
         }
+        # Remove any blank Entries from List
+        $global:ChocoPrograms = $global:ChocoPrograms | Where-Object { $_ -ne " " }
         # Save the array to a file for future reference 
         $global:ChocoPrograms | Out-File -FilePath $selectedProgramsFilePath -Encoding UTF8 
         $global:ChocoPrograms | Out-File -FilePath $selectedProgramsFilePathBackup -Encoding UTF8 
@@ -414,10 +416,13 @@ function Toggle-Program {
 
     if ($ProgramNumber -ge 1 -and $ProgramNumber -le $AllChocoPrograms.Count) {
         $ProgramName = $AllChocoPrograms[$ProgramNumber - 1]
+        # Remove Program From List
         if ($global:ChocoPrograms -contains $ProgramName) {
             $global:ChocoPrograms = $global:ChocoPrograms | Where-Object { $_ -ne $ProgramName }
             #Write-Host "Removed $ProgramName from the installation list."
-        } else {
+        } 
+        # Add Program To List
+        else {
             # If List is empty
             if ($global:ChocoPrograms.Count -le 0) {
                 Write-Host "List Empty"
@@ -425,6 +430,7 @@ function Toggle-Program {
                 $global:ChocoPrograms += @(" ")
                 $global:ChocoPrograms += @("$ProgramName")
             }
+            # List is not Emtpy
             else {
                 Write-Host "List Not Empty"
                 # Convert the existing array to an ArrayList
