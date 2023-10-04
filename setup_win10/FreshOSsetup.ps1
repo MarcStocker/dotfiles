@@ -367,7 +367,10 @@ function Print-ChocolateyProgramsList {
         }
     }
     Write-Host ""  # Add a new line after printing the list
-    Write-Host "X. Exit"  -ForegroundColor Red
+    Write-Host "A. Select All"   -Foreground Black -BackgroundColor GREEN
+    Write-Host "U. Unselect All" -Foreground Black -BackgroundColor YELLOW
+    Write-Host ""  
+    Write-Host "X. Go Back"  -ForegroundColor Red
     Write-Host ""  # Add a new line after printing the list
 
     # Prompt for user input
@@ -383,11 +386,23 @@ function Print-ChocolateyProgramsList {
         $global:ChocoPrograms | Out-File -FilePath $selectedProgramsFilePathBackup -Encoding UTF8 
         break 
     }
-    # Parse the user input as an integer
-    $selectedOption = [int]$userInput
+    elseif ($userInput -eq 'a') { 
+        $global:ChocoPrograms = $global:AllChocoPrograms | Sort-Object
+        Clear-Host
+        Print-ChocolateyProgramsList -ChocoPrograms $global:ChocoPrograms -AllChocoPrograms $AllChocoPrograms
+    }
+    elseif ($userInput -eq 'u') { 
+        $global:ChocoPrograms = @()
+        Clear-Host
+        Print-ChocolateyProgramsList -ChocoPrograms $global:ChocoPrograms -AllChocoPrograms $AllChocoPrograms
+    }
+    else {
+        # Parse the user input as an integer
+        $selectedOption = [int]$userInput
 
-    Clear-Host
-    Toggle-Program -ProgramNumber $selectedOption -ChocoPrograms $global:ChocoPrograms -AllChocoPrograms $AllChocoPrograms
+        Clear-Host
+        Toggle-Program -ProgramNumber $selectedOption -ChocoPrograms $global:ChocoPrograms -AllChocoPrograms $AllChocoPrograms
+    }
 }
 
 # Add or remove a program from the chocoPrograms array (Which programs to install)
@@ -403,11 +418,21 @@ function Toggle-Program {
             $global:ChocoPrograms = $global:ChocoPrograms | Where-Object { $_ -ne $ProgramName }
             #Write-Host "Removed $ProgramName from the installation list."
         } else {
-            # Convert the existing array to an ArrayList
-            $global:ChocoPrograms = [System.Collections.ArrayList]($global:ChocoPrograms)
-            # Now you can add elements to it
-            $global:ChocoPrograms.Add("$ProgramName")
-            #Write-Host "Added $ProgramName to the installation list."
+            # If List is empty
+            if ($global:ChocoPrograms.Count -le 0) {
+                Write-Host "List Empty"
+                $global:ChocoPrograms = @() | Sort-Object
+                $global:ChocoPrograms += @(" ")
+                $global:ChocoPrograms += @("$ProgramName")
+            }
+            else {
+                Write-Host "List Not Empty"
+                # Convert the existing array to an ArrayList
+                $global:ChocoPrograms = [System.Collections.ArrayList]($global:ChocoPrograms)
+                # Now you can add elements to it
+                $global:ChocoPrograms.Add("$ProgramName")
+                #Write-Host "Added $ProgramName to the installation list."
+            }
         }
     } else {
         Write-Host "Invalid program number. Please enter a valid number. $ProgramNumber"
