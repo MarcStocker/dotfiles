@@ -15,7 +15,7 @@ vbScriptFileName = "Execute_FreshOSsetup.vbs"
 ' Define the local and remote script paths
 localScriptPath = scriptFolder & psScriptFileName
 remoteScriptURL = "https://raw.githubusercontent.com/MarcStocker/dotfiles/main/setup_win10/FreshOSsetup.ps1"
-vbsScriptURL    = "https://raw.githubusercontent.com/MarcStocker/dotfiles/main/setup_win10/Execute_FreshOSsetup.vbs"
+vbsScriptURL = "https://raw.githubusercontent.com/MarcStocker/dotfiles/main/setup_win10/Execute_FreshOSsetup.vbs"
 
 ' Function to download a file from a URL
 Function DownloadFile(url, localPath)
@@ -46,8 +46,10 @@ Function FilesAreDifferent(localFilePath, remoteURL)
     If objHTTP.Status = 200 Or objHTTP.Status = 201 Then
         ' Fetch the content of the remote file
         remoteContents = objHTTP.responseText
+
         ' Read the content of the local file
         localContents = ReadFile(localFilePath)
+
         ' Compare the contents of the local and remote files
         FilesAreDifferent = (localContents <> remoteContents)
     Else
@@ -71,14 +73,25 @@ End Function
 ' Function to prompt the user
 Function PromptForUpdate(scriptName)
     Dim response
-    response = MsgBox("A newer version of the " & scriptName & " is available. Do you want to update it?", vbYesNo + vbQuestion, "Update Script")
-    PromptForUpdate = (response = vbYes)
+    response = MsgBox("A newer version of the " & scriptName & " is available. Do you want to update it?", vbYesNoCancel + vbQuestion, "Update Script")
+    
+    Select Case response
+        Case vbYes
+            PromptForUpdate = "Yes"
+        Case vbNo
+            PromptForUpdate = "No"
+        Case vbCancel
+            PromptForUpdate = "Cancel"
+    End Select
 End Function
 
 ' Check if the VBS script is different on GitHub
 If FilesAreDifferent(WScript.ScriptFullName, vbsScriptURL) Then
     ' Prompt the user to update the VBS script
-    If PromptForUpdate("VBS script") Then
+    Dim vbsPrompt
+    vbsPrompt = PromptForUpdate("VBS script")
+    
+    If vbsPrompt = "Yes" Then
         ' Download the updated VBS script as a temporary file
         tempScriptPath = scriptFolder & "temp_" & vbScriptFileName
         DownloadFile vbsScriptURL, tempScriptPath
@@ -95,6 +108,9 @@ If FilesAreDifferent(WScript.ScriptFullName, vbsScriptURL) Then
 
         ' Exit the current script
         WScript.Quit
+    ElseIf vbsPrompt = "Cancel" Then
+        ' User canceled, exit the script
+        WScript.Quit
     End If
 End If
 
@@ -105,12 +121,17 @@ If Not objFSO.FileExists(localScriptPath) Then
     objShell.Run "wscript """ & WScript.ScriptFullName & """", 1, True
 ElseIf FilesAreDifferent(localScriptPath, remoteScriptURL) Then
     ' Prompt the user to update the local .ps1 script
-    If PromptForUpdate(psScriptFileName) Then
+    Dim psPrompt
+    psPrompt = PromptForUpdate("PowerShell script")
+    
+    If psPrompt = "Yes" Then
         ' Download the updated .ps1 script
         DownloadFile remoteScriptURL, localScriptPath
+    ElseIf psPrompt = "Cancel" Then
+        ' User canceled, exit the script
+        WScript.Quit
     End If
 End If
-
 
 ' Run the PowerShell script with elevated privileges
 objShell.ShellExecute "powershell.exe", "-ExecutionPolicy Bypass -NoProfile -File """ & localScriptPath & """", "", "runas", 1
