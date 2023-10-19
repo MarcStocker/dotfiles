@@ -189,6 +189,8 @@ function Rename-ComputerWithPrompt {
     $currentComputerName = $env:COMPUTERNAME
     # Name of the computer AFTER a reboot (If it's been changed)
     $newComputerName = Get-ItemPropertyValue -Path "Registry::HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\ComputerName\ComputerName" -Name "ComputerName"
+            Write-Host "Current Name: " -NoNewline 
+            Write-Host "$currentComputerName" -ForegroundColor Green 
 
     do {
         if ($currentComputerName -eq $newComputerName) {
@@ -706,13 +708,44 @@ function dialogSystem {
         "Sign in Options",
         "Enable RDP",
         "Toggle Light/Dark Theme",
-        "Set Desktop Wallpaper"
+        "Set Desktop Wallpaper",
+        "Power Options: Add Ultimate Performance Power Plan"
     )
     while ($true) {
         # Clear the screen
         #title-clearScreen
         Clear-Host
         Format-StringInTemplate "System Settings"
+
+        $ComputerName = Get-ItemPropertyValue -Path "Registry::HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\ComputerName\ComputerName" -Name "ComputerName"
+        $uacLevel = Get-ItemPropertyValue -Path "Registry::HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\Policies\System" -Name "ConsentPromptBehaviorAdmin"
+        $currentTheme = Get-ItemPropertyValue -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize" -Name "AppsUseLightTheme"
+        if ($currentTheme -eq 0) {
+            $currentTheme = "Dark"
+        } else {
+            $currentTheme = "Light"
+        }
+        $powerPlan = (Get-CimInstance -Namespace "Root\cimv2\power" -ClassName Win32_PowerPlan | Where-Object { $_.IsActive }).ElementName
+
+
+        Write-Host "Comp Name:  " -ForegroundColor Cyan -NoNewLine
+        Write-Host "$ComputerName" -ForegroundColor Yellow 
+        Write-Host "UAC Level:  " -ForegroundColor Cyan -NoNewLine
+        Write-Host "$uacLevel" -ForegroundColor Yellow 
+        Write-Host "Cur Theme:  " -ForegroundColor Cyan -NoNewLine
+        Write-Host "$currentTheme" -ForegroundColor Yellow 
+        Write-Host "Power Plan: " -ForegroundColor Cyan -NoNewLine
+        Write-Host "$powerPlan" -ForegroundColor Yellow 
+
+
+
+
+        Write-Host ""
+        Write-Host ""
+        Write-Host ""
+
+
+
 
         # Name of the computer BEFORE a reboot
         $currentComputerName = $env:COMPUTERNAME
@@ -750,6 +783,7 @@ function dialogSystem {
             6 { enableRDP }
             7 { toggleLightDarkTheme }
             8 { setWallpaper }
+            9 { powercfg -duplicatescheme e9a42b02-d5df-448d-aa00-03f14749eb61; powercfg.cpl }
             default { Write-Host "Invalid option. Please select a valid option." -ForegroundColor Red }
         }
 
@@ -935,7 +969,8 @@ while ($true) {
     # Display menu options
     Write-Host "Select an option:"
     for ($i = 0; $i -lt $options.Count; $i++) {
-        Write-Host "$($i + 1). " -ForegroundColor Green -NoNewLine
+        if ($i -eq 3)   { Write-Host "$($i + 1). " -ForegroundColor Yellow -NoNewLine }
+        else            { Write-Host "$($i + 1). " -ForegroundColor Green -NoNewLine }
         Write-Host "$($options[$i])"
     }
     Write-Host ""
@@ -948,15 +983,16 @@ while ($true) {
     $userInput = Read-Host "Select"
     # Exit the loop if the user enters 'x'
     if ($userInput -eq $exitKey) { exit }
+    if ($userInput -eq "") { continue }
     # Parse the user input as an integer
-    $selectedOption = [int]$userInput
+        $selectedOption = [int]$userInput
     Clear-Host
     # Execute the selected function based on the user input
     switch ($selectedOption) {
         1 { dialogSystem }
         2 { dialogPrograms }
         3 { backupStartMenu }
-        4 { Remove-FolderAndContents -backupSaveFolder $backupSaveFolder -allProgramsFilename $allProgramsFilename -selectedProgramsFilename selectedProgramsFilename}
+        4 { Remove-FolderAndContents -backupSaveFolder $backupSaveFolder -allProgramsFilename $allProgramsFilename -selectedProgramsFilename selectedProgramsFilename }
         0 { test }
         default { Write-Host "Invalid option. Please select a valid option." -ForegroundColor Red }
     }
