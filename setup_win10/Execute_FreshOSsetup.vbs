@@ -9,6 +9,7 @@ Set objShell = CreateObject("Shell.Application")
 scriptFolder = Left(WScript.ScriptFullName, InStrRev(WScript.ScriptFullName, "\"))
 
 ' Define the PowerShell script file name and the original VBS script name
+currentScriptName = WScript.ScriptName
 psScriptFileName = "FreshOSsetup.ps1"
 vbScriptFileName = "Execute_FreshOSsetup.vbs"
 
@@ -93,8 +94,8 @@ If FilesAreDifferent(WScript.ScriptFullName, vbsScriptURL) Then
     
     If vbsPrompt = "Yes" Then
         ' Download the updated VBS script as a temporary file
-        ' tempScriptPath = scriptFolder & "temp_" & vbScriptFileName
-        tempScriptPath = scriptFolder & vbScriptFileName
+        tempScriptPath = scriptFolder & "temp_" & vbScriptFileName
+        ' tempScriptPath = scriptFolder & vbScriptFileName
         DownloadFile vbsScriptURL, tempScriptPath
 
         ' Run the updated VBS script
