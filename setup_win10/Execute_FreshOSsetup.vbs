@@ -93,7 +93,8 @@ If FilesAreDifferent(WScript.ScriptFullName, vbsScriptURL) Then
     
     If vbsPrompt = "Yes" Then
         ' Download the updated VBS script as a temporary file
-        tempScriptPath = scriptFolder & "temp_" & vbScriptFileName
+        ' tempScriptPath = scriptFolder & "temp_" & vbScriptFileName
+        tempScriptPath = scriptFolder & vbScriptFileName
         DownloadFile vbsScriptURL, tempScriptPath
 
         ' Run the updated VBS script
@@ -106,6 +107,8 @@ If FilesAreDifferent(WScript.ScriptFullName, vbsScriptURL) Then
         objFSO.MoveFile tempScriptPath, WScript.ScriptFullName ' Rename the temp script to the original name
         Set objFSO = Nothing
 
+        Dim response
+        response = MsgBox(vbScriptFileName & " script has been updated. Please relaunch the script.", vbInformation, "UPDATED - Relaunch Script")
         ' Exit the current script
         WScript.Quit
     ElseIf vbsPrompt = "Cancel" Then
@@ -118,6 +121,7 @@ End If
 Set objFSO = CreateObject("Scripting.FileSystemObject")
 If Not objFSO.FileExists(localScriptPath) Then
     ' Download the PowerShell script from the remote URL
+    Set objShell = CreateObject("WScript.Shell")
     objShell.Run "wscript """ & WScript.ScriptFullName & """", 1, True
 ElseIf FilesAreDifferent(localScriptPath, remoteScriptURL) Then
     ' Prompt the user to update the local .ps1 script
