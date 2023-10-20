@@ -121,10 +121,10 @@ End If
 ' Check if the PowerShell script exists locally
 Set objFSO = CreateObject("Scripting.FileSystemObject")
 If Not objFSO.FileExists(localScriptPath) Then
-    ' Download the PowerShell script from the remote URL
-    Set objShell = CreateObject("WScript.Shell")
-    objShell.Run "wscript """ & WScript.ScriptFullName & """", 1, True
-ElseIf FilesAreDifferent(localScriptPath, remoteScriptURL) Then
+    ' Download the .ps1 script
+    DownloadFile remoteScriptURL, localScriptPath
+End If
+If FilesAreDifferent(localScriptPath, remoteScriptURL) Then
     ' Prompt the user to update the local .ps1 script
     Dim psPrompt
     psPrompt = PromptForUpdate("PowerShell script")
