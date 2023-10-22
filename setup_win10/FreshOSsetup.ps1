@@ -367,10 +367,11 @@ function Install-Programs {
             Write-Host "Installing into Dir: $installLoc" -ForegroundColor Cyan
             choco Install $program -y -ia "INSTALLDIR=$installLoc"
         }
-        Write-Host "=======================================================================" -ForegroundColor Magenta
-        Write-Host "== " -ForegroundColor Magenta -NoNewline
-        Write-Host "$($program) INSTALLED SUCCESSFULLY" -ForegroundColor Green
-        Write-Host "=======================================================================" -ForegroundColor Magenta
+        Write-Host "=======================================================================" -ForegroundColor Black -BackgroundColor Magenta
+        Write-Host "==" -BackgroundColor Magenta -ForegroundColor Black -NoNewline
+        Write-Host " $($program) " -ForegroundColor Black -BackgroundColor Green -NoNewLine
+        Write-Host " PROCESS COMPLETE " 
+        Write-Host "=======================================================================" -ForegroundColor Black -BackgroundColor Magenta
         $count = $count + 1
     }
     EnterToContinue
@@ -463,6 +464,7 @@ function Toggle-Program {
         [string[]]$AllChocoPrograms
     )
 
+    # Make sure it's a viable number
     if ($ProgramNumber -ge 1 -and $ProgramNumber -le $AllChocoPrograms.Count) {
         $ProgramName = $AllChocoPrograms[$ProgramNumber - 1]
         # Remove Program From List
@@ -473,7 +475,7 @@ function Toggle-Program {
         # Add Program To List
         else {
             # If List is empty
-            if ($global:ChocoPrograms.Count -le 0) {
+            if ($global:ChocoPrograms.Count -le 1) {
                 # Write-Host "List Empty"
                 $global:ChocoPrograms = @() | Sort-Object
                 $global:ChocoPrograms += @(" ")
@@ -1317,6 +1319,8 @@ $options = @(
     "System Settings"
     "Programs"
     "Backup: Start Menu Layout"
+    "Backup: All Current System Settings"
+    "LAUNCH: ChrisTitusTech WinUtil"
 )
 
 while ($true) {
@@ -1326,11 +1330,17 @@ while ($true) {
     # Display menu options
     Write-Host "Select an option:"
     for ($i = 0; $i -lt $options.Count; $i++) {
-        Write-Host "$($i + 1). " -ForegroundColor Green -NoNewLine
-        Write-Host "$($options[$i])"
+        if ($options[$i] -like "*Backup: All*") {
+            Write-Host ""
+            Write-Host "$($i + 1)." -ForegroundColor Black -BackgroundColor Green -NoNewLine
+            Write-Host " $($options[$i])"
+            Write-Host ""
+        }
+        else {
+            Write-Host "$($i + 1). " -ForegroundColor Green -NoNewLine
+            Write-Host "$($options[$i])"
+        }
     }
-    Write-Host ""
-    Write-Host "4." -Foregroundcolor Black -BackgroundColor Green -NoNewLine ; Write-Host " Backup All System Settings (View First)"
     Write-Host ""
     Write-Host "dd. " -Foregroundcolor Red -NoNewLine; Write-Host "Script Cleanup " -NoNewLine
     Write-Host "(Delete All files/folders/settings produced by this script.)" -BackgroundColor DarkGray
@@ -1362,7 +1372,7 @@ while ($true) {
         2 { dialogPrograms }
         3 { backupStartMenu }
         4 { backupAllSettings }
-        5 { Write-Host "If you want to back out, hit Ctrl+C Now."; EnterToContinue; }
+        5 { irm https://christitus.com/win | iex }
         0 { test }
         default { Write-Host "Invalid option. Please select a valid option." -ForegroundColor Red }
     }
