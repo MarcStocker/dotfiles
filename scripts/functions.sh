@@ -1,4 +1,4 @@
-source /home/roki/dotfiles/scripts/shellTextVariables.sh
+source ~/dotfiles/scripts/shellTextVariables.sh
 # ----------------------------------
 # Colors
 # ----------------------------------
@@ -119,8 +119,3 @@ print_centered_underlined () {
   echo -en "${Undr}${str// / }"
   echo -en "${NOCOLOR}"
  }
-<<<<<<< HEAD
-=======
-
-
->>>>>>> 6316bf8bb0e120c1948ee1ffb168b35735f52b24
