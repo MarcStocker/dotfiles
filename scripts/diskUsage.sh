@@ -42,18 +42,20 @@ SAVECURSOR="${TC}s"
 CURSORLOAD="${TC}u"
 LOADCURSOR="${TC}u"
 
-#############################################################################################
-# This script/function displays all storageDrive on the system and info about their space
+#####################################################################################################
+# This script/function displays all mounted storage drives on the system and info about their space.
+#
 # The OS harddrive '/' will always be first. 
-# Following the OS will be every other drive that doesn't come from the /etc folder,
+# Following the OS drive will be every other drive that doesn't come from the /etc folder,
 # and will be sorted by total size, smallest-largest. 
 #
 # The function harddrive() will accept 1 argument, and must be the strings "reverse" or "r".
 # Passing in these arguments will reverse the order to largest-smallest
 #
-# You can save hardcoded drives (the location where they should be mounted) as well
+# You can save hardcoded drives (the location where they should be mounted) as well. 
+# This will give you the "{Drive} is UNMOUNTED..." warning if it cannot be found. 
 # 
-#############################################################################################
+#####################################################################################################
 # Example output (Real output will be colorized): 
 ##  user@machine:~/dotfiles/scripts$ ./diskUsage.sh list
 ##    Filesystems             Free    Used    Size   Used%
@@ -73,12 +75,12 @@ LOADCURSOR="${TC}u"
 ##    [━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━]
 ##    /mnt/raid5               16T     21T     39T     57%
 ##    [━━━━━━━━━━━━━━━━━━━━━━━━━━━━----------------------]
-#############################################################################################
+#####################################################################################################
 #
-# Note: If you want to change the intent spacing, just change the variable "indentNum" 
+# Note: If you want to change the indent spacing, just change the variable "indentNum" 
 #       Or replace the indent spaces with another character by changing "indentChar"
 #
-#############################################################################################
+#####################################################################################################
 
 # Accepts 4 arguments:
 # 1. "Reverse" flag to reverse harddrive order based on total size. Either "Reverse" or "r".

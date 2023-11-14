@@ -1,4 +1,4 @@
-source /home/roki/dotfiles/scripts/shellTextVariables.sh
+source ~/dotfiles/scripts/shellTextVariables.sh
 # ----------------------------------
 # Colors
 # ----------------------------------
@@ -48,7 +48,7 @@ loadingpid=""
 # ==================================
 # ==================================
 # ==================================
-VerNum="v4.0"
+VerNum="v4.2"
 VerSTRLENGTH=`echo -n $VerNum | wc -m`
 for n in `seq 1 $VerSTRLENGTH`
 do 
@@ -80,22 +80,25 @@ banner () {
 	#echo -e "${PURPLE}═════════════════════════════════════════════════════════${NOCOLOR}"
 	#echo
 	#echo -e "${PURPLE}═════════════════════════════════════════════════════════${NOCOLOR}"
-  echo -e "${PURPLE}╭─────────────────────────────────────────────────────╮${NOCOLOR}"
-	echo -e "${PURPLE}│  ${CYAN}-------------------------------------------------${NOCOLOR}  ${PURPLE}│${NOCOLOR}"
-	echo -e "${PURPLE}│  ${CYAN}--  ${PURPLE}__________        __   .__                 ${CYAN}--  ${PURPLE}│${NOCOLOR}"
-	echo -e "${PURPLE}│  ${CYAN}--  ${PURPLE}\\______   \\ ____ |  | _|__|____    ____    ${CYAN}--  ${PURPLE}│${NOCOLOR}"
-	echo -e "${PURPLE}│  ${CYAN}--  ${PURPLE} |       _//  _ \\|  |/ /  \\__  \\  /    \\   ${CYAN}--  ${PURPLE}│${NOCOLOR}"
-	echo -e "${PURPLE}│  ${CYAN}--  ${PURPLE} |    |   {  <_> }    <|  |/ __ \\|   |  \\  ${CYAN}--  ${PURPLE}│${NOCOLOR}"
-	echo -e "${PURPLE}│  ${CYAN}--  ${PURPLE} |____|_  /\\____/|__|_ \\__{____  /___|  /  ${CYAN}--  ${PURPLE}│${NOCOLOR}"
-	echo -e "${PURPLE}│  ${CYAN}--  ${PURPLE}        \\/            \\/       \\/     \\/   ${CYAN}--  ${PURPLE}│${NOCOLOR}"
-	echo -e "${PURPLE}│  ${CYAN}-- ${PURPLE}  _________                                 ${CYAN}--  ${PURPLE}│${NOCOLOR}"
-	echo -e "${PURPLE}│  ${CYAN}-- ${PURPLE} /   _____/ ______________  __ ___________  ${CYAN}--  ${PURPLE}│${NOCOLOR}"
-	echo -e "${PURPLE}│  ${CYAN}-- ${PURPLE} \\_____  \\_/ __ \\_  __ \\  \\/ // __ \\_  __ \\ ${CYAN}--  ${PURPLE}│${NOCOLOR}"
-	echo -e "${PURPLE}│  ${CYAN}-- ${PURPLE} /        \\  ___/|  | \\/\\   /\\  ___/|  | \\/ ${CYAN}--  ${PURPLE}│${NOCOLOR}"
-	echo -e "${PURPLE}│  ${CYAN}-- ${PURPLE}/_______  /\\___  >__|    \\_/  \\___  >__|    ${CYAN}--  ${PURPLE}│${NOCOLOR}"
-	echo -e "${PURPLE}│  ${CYAN}-- ${PURPLE}        \\/     \\/                 \\/     ${PURPLE} ${VerNum} ${CYAN}--   ${PURPLE}│${NOCOLOR}"
-	echo -e "${PURPLE}│  ${CYAN}-----------------------------------------------${CYAN}-- ${NOCOLOR} ${PURPLE}│${NOCOLOR}"
-  echo -e "${PURPLE}╰─────────────────────────────────────────────────────╯${NOCOLOR}"
+  p=${PURPLE}
+  c=${CYAN}
+  n=${NOCOLOR}
+  echo -e "${p}╭───────────────────────────────────────────────────╮${n}"
+	echo -e "${p}│ ${c}╭───────────────────────────────────────────────╮${n}"                          "${p}│${n}"
+	echo -e "${p}│ ${c}│   ${p}__________        __   .__                ${c}"                    " │ ${p}│${n}"
+	echo -e "${p}│ ${c}│   ${p}\\______   \\ ____ |  | _|__|____    ____   ${c}"                  " │ ${p}│${n}"
+	echo -e "${p}│ ${c}│   ${p} |       _//  _ \\|  |/ /  \\__  \\  /    \\  ${c}"                " │ ${p}│${n}"
+	echo -e "${p}│ ${c}│   ${p} |    |   {  <_> }    <|  |/ __ \\|   |  \\ ${c}"                  " │ ${p}│${n}"
+	echo -e "${p}│ ${c}│   ${p} |____|_  /\\____/|__|_ \\__{____  /___|  / ${c}"                  " │ ${p}│${n}"
+	echo -e "${p}│ ${c}│   ${p}        \\/            \\/       \\/     \\/  ${c}"                " │ ${p}│${n}"
+	echo -e "${p}│ ${c}│  ${p}  _________                                ${c}"                    " │ ${p}│${n}"
+	echo -e "${p}│ ${c}│  ${p} /   _____/ ______________  __ ___________ ${c}"                    " │ ${p}│${n}"
+	echo -e "${p}│ ${c}│  ${p} \\_____  \\_/ __ \\_  __ \\  \\/ // __ \\_  __ \\"             " ${c}│ ${p}│${n}"
+	echo -e "${p}│ ${c}│  ${p} /        \\  ___/|  | \\/\\   /\\  ___/|  | \\/${c}"               " │ ${p}│${n}"
+	echo -e "${p}│ ${c}│  ${p}/_______  /\\___  >__|    \\_/  \\___  >__|   ${c}"                 " │ ${p}│${n}"
+	echo -e "${p}│ ${c}│  ${p}        \\/     \\/                 \\/     ${p}  ${VerNum}  ${c}│ ${p}│${n}"
+	echo -e "${p}│ ${c}╰───────────────────────────────────────────────╯${n}${p}"               "│${n}"
+  echo -e "${p}╰───────────────────────────────────────────────────╯${n}"
 	#echo -e "${PURPLE}═════════════════════════════════════════════════════════${NOCOLOR}"
 #  printf " -------------------------------------------------
 # --  __________        __   .__                 --
@@ -280,128 +283,129 @@ raid_status () {
 harddrive () {
 	echo
   echo -e "${PURPLE} HDD Space.: ${NOCOLOR}"
-	# Which harddrives are we going to get data from?
+  ~/dotfiles/scripts/diskUsage.sh -n 2
+	## Which harddrives are we going to get data from?
 
-	#Filesystem      Size  Used Avail Use% Mounted on
-	#/dev/sde1        87G   30G   53G  37% /
-	#/dev/sdf1       229G   47G  171G  22% /mnt/ServerBackup
-	#/dev/sdg1       234G  201G   21G  91% /mnt/plexMetaData
-	#/dev/sdh2       2.8T  2.6T  211G  93% /mnt/One
-	#/dev/sdi2       2.8T  2.7T  102G  97% /mnt/Twee
-	#/dev/md0         39T  959G   36T   3% /mnt/raid5
-	#/dev/sdj1       9.1T  9.1T  115M 100% /mnt/FatTerry
+	##Filesystem      Size  Used Avail Use% Mounted on
+	##/dev/sde1        87G   30G   53G  37% /
+	##/dev/sdf1       229G   47G  171G  22% /mnt/ServerBackup
+	##/dev/sdg1       234G  201G   21G  91% /mnt/plexMetaData
+	##/dev/sdh2       2.8T  2.6T  211G  93% /mnt/One
+	##/dev/sdi2       2.8T  2.7T  102G  97% /mnt/Twee
+	##/dev/md0         39T  959G   36T   3% /mnt/raid5
+	##/dev/sdj1       9.1T  9.1T  115M 100% /mnt/FatTerry
 
-	declare -A harddrives
+	#declare -A harddrives
 
-	harddrives[OS]=$(df / | awk '{print$1}' | grep /)
-	harddrives[Serverbackup]="/mnt/ServerBackup"
-	harddrives[plexMetaData]="/mnt/plexMetaData"
-	harddrives[raid5]="/mnt/raid5"
-	harddrives[FatTerry]="/mnt/FatTerry"
-  harddrives[One]="/mnt/One"
-	harddrives[Twee]="/mnt/Twee"
+	#harddrives[OS]=$(df / | awk '{print$1}' | grep /)
+	#harddrives[Serverbackup]="/mnt/ServerBackup"
+	#harddrives[plexMetaData]="/mnt/plexMetaData"
+	#harddrives[raid5]="/mnt/raid5"
+	#harddrives[FatTerry]="/mnt/FatTerry"
+  #harddrives[One]="/mnt/One"
+	#harddrives[Twee]="/mnt/Twee"
 
-	#echo "There are a total of ${#harddrives[@]} harddrives"
+	##echo "There are a total of ${#harddrives[@]} harddrives"
 
-	tempnum=1
- 	echo -en "${LIGHTGRAY}"
-	echo -en "Filesystems	Free	Used	Size	Used%" | awk '{printf "   %-20s %7s %7s %7s %7s", $1, $2, $3, $4, $5}'
- 	echo -e "${NOCOLOR}"
-	for key in "${!harddrives[@]}"; do
-		if ! lsblk -f | grep -q "${harddrives[${key}]}"; then
-			if [[ "${key}" != "OS" ]]; then
-				echo -e "   ${harddrives[${key}]} is not mounted..."
-				echo -e "   ${LIGHTGRAY}[${REDHL}${DARKGRAY}xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx${NOCOLOR}${LIGHTGRAY}]${NOCOLOR}"
-				continue
-			fi	
-		fi
+	#tempnum=1
+ 	#echo -en "${LIGHTGRAY}"
+	#echo -en "Filesystems	Free	Used	Size	Used%" | awk '{printf "   %-20s %7s %7s %7s %7s", $1, $2, $3, $4, $5}'
+ 	#echo -e "${NOCOLOR}"
+	#for key in "${!harddrives[@]}"; do
+	#	if ! lsblk -f | grep -q "${harddrives[${key}]}"; then
+	#		if [[ "${key}" != "OS" ]]; then
+	#			echo -e "   ${harddrives[${key}]} is not mounted..."
+	#			echo -e "   ${LIGHTGRAY}[${REDHL}${DARKGRAY}xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx${NOCOLOR}${LIGHTGRAY}]${NOCOLOR}"
+	#			continue
+	#		fi	
+	#	fi
 
-		tot_available=`df -h ${harddrives[${key}]} | awk '{print $4}' | tail -n 1`
-		tot_used=`df -h ${harddrives[${key}]} | awk '{print $3}' | tail -n 1`
-		tot_size=`df -h ${harddrives[${key}]} | awk '{print $2}' | tail -n 1`
-		tot_usedPerc=`df -h ${harddrives[${key}]} | awk '{print $5}' | tail -n 1`
+	#	tot_available=`df -h ${harddrives[${key}]} | awk '{print $4}' | tail -n 1`
+	#	tot_used=`df -h ${harddrives[${key}]} | awk '{print $3}' | tail -n 1`
+	#	tot_size=`df -h ${harddrives[${key}]} | awk '{print $2}' | tail -n 1`
+	#	tot_usedPerc=`df -h ${harddrives[${key}]} | awk '{print $5}' | tail -n 1`
 
-		if [[ "${key}" = "OS" ]]; then
-			harddrives[OS]="/${DARKGRAY}(${harddrives[${key}]:1})${NOCOLOR}"
-			echo -e "${harddrives[$key]}	${Bold}${tot_available}b	${tot_used}b	${tot_size}b	${tot_usedPerc}" | awk '{printf "   %-31s %11s %7s %7s %7s", $1, $2, $3, $4, $5}'
-		else
-			echo -e "${harddrives[$key]}	${Bold}${tot_available}b	${tot_used}b	${tot_size}b	${tot_usedPerc}" | awk '{printf "   %-20s %11s %7s %7s %7s", $1, $2, $3, $4, $5}'
-		fi
+	#	if [[ "${key}" = "OS" ]]; then
+	#		harddrives[OS]="/${DARKGRAY}(${harddrives[${key}]:1})${NOCOLOR}"
+	#		echo -e "${harddrives[$key]}	${Bold}${tot_available}b	${tot_used}b	${tot_size}b	${tot_usedPerc}" | awk '{printf "   %-31s %11s %7s %7s %7s", $1, $2, $3, $4, $5}'
+	#	else
+	#		echo -e "${harddrives[$key]}	${Bold}${tot_available}b	${tot_used}b	${tot_size}b	${tot_usedPerc}" | awk '{printf "   %-20s %11s %7s %7s %7s", $1, $2, $3, $4, $5}'
+	#	fi
 
-		#echo -e "Harddrive Key: 	${key}"
-		#echo -e "Harddrive Value: ${harddrives[${key}]}"
-		#echo -e "    ${key}"
-		#echo -e "    Tot_Capacity: ${tot_used}/${tot_size}"
-		#echo -e "    Tot_Available: ${tot_available}"
-
-
-		echo 
-		
-		perc=`echo ${tot_usedPerc} | sed 's/\d*%//'`
-
-		usedPerc=$(( ${perc} / 2  ))
-		str=$(printf "%${usedPerc}s")
-		percDiff=$(( 50 - $usedPerc ))
-		extraStr=$(printf "%${percDiff}s")
-
-		echo -en "   ${LIGHTGRAY}["
-		if [[ ${perc} -lt 50 ]]; then
-			echo -en "${GREEN}"
-		elif [[ ${perc} -ge 50 && ${perc} -lt 55 ]]; then
-			echo -en "\033[38;5;076m"
-		elif [[ ${perc} -ge 55 && ${perc} -lt 60 ]]; then
-			echo -en "\033[38;5;112m"
-		elif [[ ${perc} -ge 60 && ${perc} -lt 65 ]]; then
-			echo -en "\033[38;5;148m"
-		elif [[ ${perc} -ge 65 && ${perc} -lt 70 ]]; then
-			echo -en "\033[38;5;184m"
-		elif [[ ${perc} -ge 70 && ${perc} -lt 75 ]]; then
-			echo -en "\033[38;5;220m"
-		elif [[ ${perc} -ge 75 && ${perc} -lt 80 ]]; then
-			echo -en "\033[38;5;214m"
-		elif [[ ${perc} -ge 80 && ${perc} -lt 85 ]]; then
-			echo -en "\033[38;5;208m"
-		elif [[ ${perc} -ge 85 && ${perc} -lt 90 ]]; then
-			echo -en "\033[38;5;202m"
-		elif [[ ${perc} -ge 90 && ${perc} -lt 95 ]]; then
-			echo -en "\033[38;5;124m"
-		elif [[ ${perc} -ge 95 ]]; then
-			echo -en "\033[38;5;009m"
-		else
-			echo -en
-		fi
-
-		echo -en "${str// /=}${NOCOLOR}"
-		echo -en "${DARKGRAY}${extraStr// /=}${NOCOLOR}"
-		echo -en "${LIGHTGRAY}]${NOCOLOR}"
-
-		echo
-		tempnum=$(( $tempnum + 1 ))
-	done
+	#	#echo -e "Harddrive Key: 	${key}"
+	#	#echo -e "Harddrive Value: ${harddrives[${key}]}"
+	#	#echo -e "    ${key}"
+	#	#echo -e "    Tot_Capacity: ${tot_used}/${tot_size}"
+	#	#echo -e "    Tot_Available: ${tot_available}"
 
 
+	#	echo 
+	#	
+	#	perc=`echo ${tot_usedPerc} | sed 's/\d*%//'`
 
-	#echo -en "${GREEN}"
-	#echo -en "\033[38;5;076m"
-	#echo -e "========"
-	#echo -en "\033[38;5;112m"
-	#echo -e "============"
-	#echo -en "\033[38;5;148m"
-	#echo -e "==============="
-	#echo -en "\033[38;5;184m"
-	#echo -e "=================="
-	#echo -en "\033[38;5;220m"
-	#echo -e "====================="
-	#echo -en "\033[38;5;214m"
-	#echo -e "========================"
-	#echo -en "\033[38;5;208m"
-	#echo -e "==========================="
-	#echo -en "\033[38;5;202m"
-	#echo -e "=============================="
-	#echo -en "\033[38;5;124m"
-	#echo -e "================================="
-	#echo -en "\033[38;5;009m"
-	#echo -e "====================================${NOCOLOR}"
+	#	usedPerc=$(( ${perc} / 2  ))
+	#	str=$(printf "%${usedPerc}s")
+	#	percDiff=$(( 50 - $usedPerc ))
+	#	extraStr=$(printf "%${percDiff}s")
+
+	#	echo -en "   ${LIGHTGRAY}["
+	#	if [[ ${perc} -lt 50 ]]; then
+	#		echo -en "${GREEN}"
+	#	elif [[ ${perc} -ge 50 && ${perc} -lt 55 ]]; then
+	#		echo -en "\033[38;5;076m"
+	#	elif [[ ${perc} -ge 55 && ${perc} -lt 60 ]]; then
+	#		echo -en "\033[38;5;112m"
+	#	elif [[ ${perc} -ge 60 && ${perc} -lt 65 ]]; then
+	#		echo -en "\033[38;5;148m"
+	#	elif [[ ${perc} -ge 65 && ${perc} -lt 70 ]]; then
+	#		echo -en "\033[38;5;184m"
+	#	elif [[ ${perc} -ge 70 && ${perc} -lt 75 ]]; then
+	#		echo -en "\033[38;5;220m"
+	#	elif [[ ${perc} -ge 75 && ${perc} -lt 80 ]]; then
+	#		echo -en "\033[38;5;214m"
+	#	elif [[ ${perc} -ge 80 && ${perc} -lt 85 ]]; then
+	#		echo -en "\033[38;5;208m"
+	#	elif [[ ${perc} -ge 85 && ${perc} -lt 90 ]]; then
+	#		echo -en "\033[38;5;202m"
+	#	elif [[ ${perc} -ge 90 && ${perc} -lt 95 ]]; then
+	#		echo -en "\033[38;5;124m"
+	#	elif [[ ${perc} -ge 95 ]]; then
+	#		echo -en "\033[38;5;009m"
+	#	else
+	#		echo -en
+	#	fi
+
+	#	echo -en "${str// /=}${NOCOLOR}"
+	#	echo -en "${DARKGRAY}${extraStr// /=}${NOCOLOR}"
+	#	echo -en "${LIGHTGRAY}]${NOCOLOR}"
+
+	#	echo
+	#	tempnum=$(( $tempnum + 1 ))
+	#done
+
+
+
+	##echo -en "${GREEN}"
+	##echo -en "\033[38;5;076m"
+	##echo -e "========"
+	##echo -en "\033[38;5;112m"
+	##echo -e "============"
+	##echo -en "\033[38;5;148m"
+	##echo -e "==============="
+	##echo -en "\033[38;5;184m"
+	##echo -e "=================="
+	##echo -en "\033[38;5;220m"
+	##echo -e "====================="
+	##echo -en "\033[38;5;214m"
+	##echo -e "========================"
+	##echo -en "\033[38;5;208m"
+	##echo -e "==========================="
+	##echo -en "\033[38;5;202m"
+	##echo -e "=============================="
+	##echo -en "\033[38;5;124m"
+	##echo -e "================================="
+	##echo -en "\033[38;5;009m"
+	##echo -e "====================================${NOCOLOR}"
 
 }
 
