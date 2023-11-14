@@ -186,7 +186,7 @@ storageDrives () {
   # Echo the Header
   echo -en "${GREEN}"
   #formatting="${DARKGREY}${OnWhite}${Inv}${Undr}${Bold}"
-  echo -en "Filesystems  Free  Used  Size  Used%" | awk -v indent="${indent}" '{printf indent "%-20s %7s %7s %7s %7s", $1, $2, $3, $4, $5}'
+  echo -en "Filesystems  Free  Used  Size  Used%" | awk -v indent="${indent}" '{printf indent "%-22s %5s %7s %7s %7s", $1, $2, $3, $4, $5}'
   #echo -e "\n  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
   echo -e "${NOCOLOR}"
 
@@ -244,10 +244,10 @@ printDriveGraphic () {
   if [[ "${mount_point}" = '/' ]]; then
     filesystem="/${DARKGREY}(${filesystem:1})${NOCOLOR}"
     output="${filesystem}  ${Bold}${tot_available}  ${tot_used}  ${tot_size}  ${tot_usedPerc}"
-    echo -e "${output}" | awk -v indent="$indent" '{printf indent "%-31s %11s %7s %7s %7s", $1, $2, $3, $4, $5}'
+    echo -e "${output}" | awk -v indent="$indent" '{printf indent "%-34s %8s %7s %7s %7s", $1, $2, $3, $4, $5}'
   else
     output="${mount_point}  ${Bold}${tot_available}  ${tot_used}  ${tot_size}  ${tot_usedPerc}"
-    echo -e "${output}" | awk -v indent="$indent" '{printf indent "%-20s %11s %7s %7s %7s", $1, $2, $3, $4, $5}'
+    echo -e "${output}" | awk -v indent="$indent" '{printf indent "%-23s %8s %7s %7s %7s", $1, $2, $3, $4, $5}'
   fi
   echo 
 

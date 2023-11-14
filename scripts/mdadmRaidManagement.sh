@@ -38,10 +38,12 @@ procMdstat () {
 }
 
 listRaidDrivesStatus () {
-  echo -en "${OnPurple}"
-  print_centered_underlined "mdadm -E /dev/sd[abcd]1"
+  retrieveRaidDiskLoc
 
-  output="$(sudo mdadm  -E /dev/sda1)"
+  echo -en "${OnPurple}"
+  print_centered_underlined "mdadm -E /dev/sd[${driveletter[0]}${driveletter[1]}${driveletter[2]}${driveletter[3]}]"
+
+  output="$(sudo mdadm  -E /dev/${raidArray[0]})"
   output="${output//degraded/${OnRed}degraded${NOCOLOR}}"
   output="${output//removed/${OnRed}removed${NOCOLOR}}"
   output="${output//clean/${GREEN}clean${NOCOLOR}}"
@@ -53,7 +55,7 @@ listRaidDrivesStatus () {
   read 
   echo -en "\033[999D\033[K"
   print_centered_underlined
-  output="$(sudo mdadm  -E /dev/sdb1)"
+  output="$(sudo mdadm  -E /dev/${raidArray[1]})"
   output="${output//degraded/${OnRed}degraded${NOCOLOR}}"
   output="${output//removed/${OnRed}removed${NOCOLOR}}"
   output="${output//clean/${GREEN}clean${NOCOLOR}}"
@@ -65,7 +67,7 @@ listRaidDrivesStatus () {
   read 
   echo -en "\033[999D\033[K"
   print_centered_underlined
-  output="$(sudo mdadm  -E /dev/sdc1)"
+  output="$(sudo mdadm  -E /dev/${raidArray[2]})"
   output="${output//degraded/${OnRed}degraded${NOCOLOR}}"
   output="${output//removed/${OnRed}removed${NOCOLOR}}"
   output="${output//clean/${GREEN}clean${NOCOLOR}}"
@@ -77,7 +79,7 @@ listRaidDrivesStatus () {
   read 
   echo -en "\033[999D\033[K"
   print_centered_underlined
-  output="$(sudo mdadm  -E /dev/sdd1)"
+  output="$(sudo mdadm  -E /dev/${raidArray[3]})"
   output="${output//degraded/${OnRed}degraded${NOCOLOR}}"
   output="${output//removed/${OnRed}removed${NOCOLOR}}"
   output="${output//clean/${GREEN}clean${NOCOLOR}}"
@@ -95,13 +97,16 @@ listRaidDrivesStatus () {
 }
 
 reassembleDrive () {
-  theCommand="sudo mdadm --create /dev/${RAID} --level=5 --raid-devices=4 --assume-clean --metadata=1.2 /dev/sd[a,b,c,d]1"
+  retrieveRaidDiskLoc
+
+  theCommand="sudo mdadm --create /dev/${RAID} --level=5 --raid-devices=4 --assume-clean --metadata=1.2 /dev/sd[${driveletter[0]},${driveletter[1]},${driveletter[2]},${driveletter[3]}]1"
   echo -en "${OnPurple}"
   print_centered_underlined "$theCommand"
 
   echo -e  "The Command:\n$theCommand"
   theCommandColor="${theCommand//${RAID}/${GREEN}${RAID}${NOCOLOR}}"
-  theCommandColor="${theCommandColor//a\,b\,c\,d/${GREEN}a\,b\,c\,d${NOCOLOR}}"
+  echo "${driveletter[0]}\,${driveletter[1]}\,${driveletter[2]}\,${driveletter[3]}"
+  theCommandColor="${theCommandColor//${driveletter[0]}\,${driveletter[1]}\,${driveletter[2]}\,${driveletter[3]}/${GREEN}${driveletter[0]}\,${driveletter[1]}\,${driveletter[2]}\,${driveletter[3]}${NOCOLOR}}"
 
   echo -e  "${Inv}ARE YOU SURE?!${NOCOLOR}\nWhile this operation did fix the Great Blackout, it can be dangerous."
   echo -e "Please look at the command carefully and make sure you really do want to run it."
@@ -140,7 +145,7 @@ reassembleDrive () {
   # Execute the command and rebuild the Array
   $theCommand
 
-  #sudo mdadm --create /dev/${RAID} --level=5 --raid-devices=4 --assume-clean --metadata=1.2 /dev/sd[a,b,c,d]1
+  #sudo mdadm --create /dev/${RAID} --level=5 --raid-devices=4 --assume-clean --metadata=1.2 /dev/sd[a,b,c,f]1
 
   echo -en "${NOCOLOR}${PURPLE}"
   print_centered_underlined
@@ -154,6 +159,33 @@ stopRaidArray () {
 
   echo -en "${NOCOLOR}${PURPLE}"
   print_centered_underlined
+}
+
+retrieveRaidDiskLoc () {
+  echo -e "What is the LABEL of the drive? (ex. "Rokian:127", enter nothing to default to "linux_raid_member")\n"
+  echo -en "LABEL: "
+  read driveLabel
+
+  echo "Entered '${driveLabel}'"
+  if [ -z "$driveLabel" ]; then
+    driveLabel='linux_raid_member'
+    echo "Entered '${driveLabel}'"
+  fi
+  raidArray=($(lsblk -f | awk -v term="$driveLabel" '$0 ~ term {gsub(/[^a-zA-Z0-9]/, "", $1); print $1}'))
+  echo "-- Array --"
+  echo "Disk 1: ${raidArray[0]}"
+  echo "Disk 2: ${raidArray[1]}"
+  echo "Disk 3: ${raidArray[2]}"
+  echo "Disk 4: ${raidArray[3]}"
+  echo "-----------"
+
+  driveletter=()
+  for ((i = 0; i < ${#raidArray[@]}; i++)); do
+    disk="${raidArray[$i]}"
+    last_letter="${disk: -2: 1}"  # Extract the last letter
+    driveletter+=("$last_letter")
+    #echo "Disk $((i + 1)): $disk (Last letter: $last_letter)"
+  done
 }
 
 
