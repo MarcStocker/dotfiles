@@ -193,6 +193,7 @@ exit_status()
 exit_script () {
   print_centered_underlined "SSH CONNECTION CLOSED"
   echo " "
+  echo " That's it, no more text. Exit.."
 
   exit
   kill -9 $PPID
