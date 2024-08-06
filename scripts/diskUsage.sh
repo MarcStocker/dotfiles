@@ -98,13 +98,17 @@ storageDrives () {
   fReverse=''
   indentNum='5'
   indentChar=' '
+  usedSpaceChar='━'
+  freeSpaceChar='━'
   order='avail'
-  while getopts 'hdlrn:c:o:' flag; do
+  while getopts 'hdlrn:c:o:u:f:' flag; do
     case "${flag}" in
       l | h | d) echo -n ;;
       r) fReverse="-r" ;; # Reverse flag for `sort` command
       n) indentNum="${OPTARG}" ;;
       c) indentChar="${OPTARG}" ;;
+      u) usedSpaceChar="${OPTARG}" ;;
+      f) freeSpaceChar="${OPTARG}" ;;
       o) echo -e "order flag: -$flag ${OPTARG}";order="${OPTARG}" ;;
       *) echo -e "${ORANGE}BAD ARUGMENT: ${NOCOLOR}-${flag} ${OPTARG}" 
          exit 1 ;;
@@ -148,8 +152,10 @@ storageDrives () {
   # storageDrive+=("/mnt/FatTerry")
   # storageDrive+=("/mnt/raid5")
   # storageDrive+=("etc...")
+  #
   #-----------------------------------------------------------#
 
+  #storageDrive+=("/mnt/oracle")
   # Gotta add in the '|' deliminator for any hardcoded drives
   for i in "${!storageDrive[@]}"; do
     storageDrive[$i]="|${storageDrive[$i]}"
@@ -182,6 +188,18 @@ storageDrives () {
       storageDrive+=("$filesystem|$mount_point")
     fi
   done < <( df | grep ^/ | sort -n -k $order $fReverse )
+
+  # Read in all ZFS pools
+  while IFS= read -r line; do
+    #echo -e "$line"
+    filesystem=$(echo "$line" | awk '{print $1}')
+    mount_point=$(echo "$line" | awk '{print $2}')
+    # Check if the value already exists in the array (From Hardcoded drives)
+    if [[ " ${storageDrive[*]} " != *"$mount_point"* ]]; then
+      #echo "ADDING: $filesystem | $mount_point"
+      storageDrive+=("$filesystem|$mount_point")
+    fi
+  done < <(zfs list -o name,mountpoint -t filesystem | grep /mnt |sort -n -k $order $fReverse )
   #echo "There are a total of ${#storageDrive[@]} storageDrive"
 
 
@@ -220,20 +238,24 @@ printDriveGraphic () {
 
   # If a hard coded drive is passed in without a filesystem, find it. 
   if [[ -z "${2// }" ]]; then
-    mount_point=$(df | grep $filesystem | awk '{print $6}')
+    mount_point=$(df | grep $filesystem | head -n 1 | awk '{print $6}')
   fi
   # Handle unmounted drives (that aren't the OS, cause techincally it's mount point is '/', not '/dev/xxx#')
   if  ! lsblk -f | grep -q "${mount_point}" || [ -z "${mount_point// }" ] ; then
-    if [[ "${filesystem}" != '/' ]]; then
-      #SPACES
-      echo -e  "${indent}${filesystem} is ${RED}${Undr}${Bold}UNMOUNTED${NOCOLOR}..."
-      echo -en "${indent}${LIGHTGRAY}[${REDHL}${DARKGRAY}"
-      str=$(printf "%50s")
-      echo -en "${str// /x}${NOCOLOR}"
-      echo -e "${NOCOLOR}${LIGHTGRAY}]${NOCOLOR}"
+    # Check to see if it's a ZFS drive as well
+    if ! zfs list | grep -q "${mount_pount}"; then
+      echo "we handled it!"
+      if [[ "${filesystem}" != '/' ]]; then
+        #SPACES
+        echo -e  "${indent}${filesystem} is ${RED}${Undr}${Bold}UNMOUNTED${NOCOLOR}..."
+        echo -en "${indent}${LIGHTGRAY}[${REDHL}${DARKGRAY}"
+        str=$(printf "%50s")
+        echo -en "${str// /x}${NOCOLOR}"
+        echo -e "${NOCOLOR}${LIGHTGRAY}]${NOCOLOR}"
+        return
+      fi  
       return
-    fi  
-    return
+    fi
   fi
 
   mount_point=${mount_point}
@@ -288,8 +310,10 @@ printDriveGraphic () {
     echo -en
   fi
 
-  echo -en "${str// /━}${NOCOLOR}"
-  echo -en "${DARKGRAY}${extraStr// /━}${NOCOLOR}"
+  echo -en "${str// /$usedSpaceChar}${NOCOLOR}"
+  echo -en "${DARKGRAY}${extraStr// /$freeSpaceChar}${NOCOLOR}"
+  # A slightly thinner line.
+  #echo -en "${DARKGRAY}${extraStr// /─}${NOCOLOR}"
   echo -e "${LIGHTGRAY}]${NOCOLOR}"
 }
 
@@ -298,11 +322,11 @@ printDriveGraphic () {
 ##################################################
 
 display="false"
-while getopts 'hdlrn:c:o:' flag; do
+while getopts 'hdlrn:c:o:u:f:' flag; do
   case "${flag}" in
-    h) echo "$(basename "$0") [-h] [-d/l] [-r] [-n #] [-c X] [-o string]
+    h) echo "$(basename "$0") [-h] [-d/l] [-r] [-n #] [-c X] [-u X] [-f X] [-o string] 
   Options:
-    -d  MUST BE USED TO DISPLAY OUTPUT: If calling the script file directly (ex. ./$(basename "$0"), this will display output. Otherwise, use it as a function in another script
+    -d  MUST BE USED TO DISPLAY OUTPUT: If calling the script file directly (ex. ./$(basename "$0"), this will display output. Otherwise, use it as a function in another script)
     -l  Same as -d option
 
     -h  Show this help dialog
@@ -310,11 +334,14 @@ while getopts 'hdlrn:c:o:' flag; do
     -o  How to order the drives. Avail options: free, used, avail, perc. (Default: avail)
     -r  Reverse order of drives 
 
-    -n  Set number of leading prefix characters/how much to indent final output (Default: ' ')
-    -c  Set the character to be used as the prefix character (Default: 4)"
+    -n  Set number of leading prefix characters/how much to indent final output (Default: 5)
+    -c  Set the character to be used as the prefix character (Default: ' ')
+
+    -u Set UsedSpace Character in graphic (Default: '━')
+    -f Set FreeSpace Character in graphic (Default: '━')"
       exit 0
       ;;
-    d|l|r|n|c|o) display="true" ;;
+    d|l|r|n|c|o|u|f) display="true" ;;
     *) echo -e "${ORANGE}BAD ARUGMENT: ${NOCOLOR}-${flag} ${OPTARG}" 
        exit 1 ;;
   esac

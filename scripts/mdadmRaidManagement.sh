@@ -3,7 +3,7 @@
 source ~/dotfiles/scripts/shellTextVariables.sh
 source ~/dotfiles/scripts/functions.sh
 
-RAID="md127"
+RAID="md126"
 
 describeState () {
   echo -en "${OnPurple}"
@@ -193,7 +193,7 @@ prompt() {
   echo -e "${PURPLE}What action would you like to perform on the RAID?${NOCOLOR}"
 	
 	echo -e "${GREEN}------------  Test/Diagnostic  --------------${NOCOLOR}"
-	echo -e "1. ${PURPLE}mdadm -D /dev/md127${NOCOLOR} --- Describe State of RAID Device"
+	echo -e "1. ${PURPLE}mdadm -D /dev/md126${NOCOLOR} --- Describe State of RAID Device"
 	echo -e "2. ${PURPLE}cat /proc/mdstat${NOCOLOR}"
 	echo -e "3. ${PURPLE}mdadm -E /dev/sd[abcd]1${NOCOLOR} --- List all Raid Devices' Status"
 	echo -e "8. ${ORANGE}Stop Array${NOCOLOR}"

@@ -57,7 +57,7 @@ done
 
 # =====================================================================
 # Load .bashrc in case user decides to CTRL+C out of the MOTD
-source /home/`whoami`/.bashrc
+source ~/.bashrc
 
 exit_script() {
     echo -e "\b\b  \n${YELLOW}Script killed by user${NOCOLOR}"

@@ -76,7 +76,7 @@ runContainerRebuild() {
 		removeContainer ${allContainers[$1]}
 		recreateContainer ${allContainers[$1]}
 		
-		vpnDockers=("frigate" "prowlarr" "qbittorrent" "overseerr" "sonarr" "radarr" "lidarr" "bazarr")
+		vpnDockers=("frigate" "prowlarr" "qbittorrent" "overseerr" "sonarr" "radarr" "lidarr" "bazarr" "readarr" "nzbhydra2" "lazylibrarian" "reiverr")
 		for i in ${!vpnDockers[@]}; do
 			container=${vpnDockers[i]}
 			echo "Rebuilding ${container}"
@@ -103,12 +103,12 @@ runContainerRebuild() {
 			fi
 		done
 		# Double check to make sure everything is running properly. 
-		vpnDocker+=("gluetun")
+		vpnDockers+=("gluetun")
 		for i in ${!vpnDockers[@]}; do
 			container=${vpnDockers[i]}
 			isRunning=`docker ps | grep ${container}`
 			isRunning=$?
-			if [[ $isRunning -eq 1 ]]; then echo -n # Only rebuild if currently running
+			if [[ $isRunning -eq 1 ]]; then echo -n 
 				lprint
 				echo -e "${RED}=== $container is not running ===${NOCOLOR}"
 			else
@@ -147,8 +147,8 @@ startContainer() {
         #eprint "Starting container ${NOCOLOR}'${GRAY}$1${NOCOLOR}'"
         #response=$(docker start $1)
   #eprint "Recreating container '${GREY}$1${NOCOLOR}'"
-        #$(cd ${dockerFolder}/$1/; docker-compose pull;)
-        $(cd ${dockerFolder}/$1/; docker-compose up -d;)
+        #$(cd ${dockerFolder}/$1/; docker compose pull;)
+        $(cd ${dockerFolder}/$1/; docker compose up -d;)
         #if [[ $reponse != "$1" ]]; then
                 #eprint "${RED}ERROR:${NOCOLOR} Something went wrong"
         #fi
@@ -156,7 +156,7 @@ startContainer() {
 
 removeContainer() {
         eprint "Removing container ${NOCOLOR}'${GRAY}$1${NOCOLOR}'"
-        $(cd ${dockerFolder}/$1/; docker-compose down;)
+        $(cd ${dockerFolder}/$1/; docker compose down;)
 				eprint "Pruning Images"
         $(docker image prune -f &>/dev/null)
 				eprint "Pruning Volumes"
@@ -165,8 +165,8 @@ removeContainer() {
 
 recreateContainer() {
   eprint "Recreating container '${GREY}$1${NOCOLOR}'"
-        $(cd ${dockerFolder}/$1/; docker-compose pull;)
-        $(cd ${dockerFolder}/$1/; docker-compose up -d;)
+        $(cd ${dockerFolder}/$1/; docker compose pull;)
+        $(cd ${dockerFolder}/$1/; docker compose up -d;)
 }
 
 prompt() {
@@ -199,21 +199,43 @@ containerSelect() {
 		else
 			continue # Skip if no docker-compose.yml file present in folder
 		fi
+    containerName=$(grep -Po 'container_name:\s*\K.*' "${dockerFolder}/${container}/docker-compose.yml")
 		numSelect=$(( $numSelect + 1 ))
 		removeNonContainers+=("${container}")
 		
 		isRunning=`docker ps | grep ${container}`
 		isRunning=$?
-		rem=$(($numSelect % 2))
+		#rem=$(($numSelect % 2))
+    updateIcon="❔"
+
+
 		tputRED=$(tput setaf 1)		# Container IS NOT running, set number to RED
 		tputGREEN=$(tput setaf 2)	# Container   IS   running, set number to GREEN
 		tputnormal=$(tput sgr0) 
 		if [[ $isRunning -eq 1 ]]; then
 			printContainers+="${tputRED}${numSelect}.,${tputnormal}${container},"
-			printf "%-4s %-25s \n" "${tputRED}${numSelect}." "${tputnormal}${container}"
+			printf "%-4s %-30s \n" "${tputRED}${numSelect}." "${tputnormal}${container}"
 		else
-			printContainers+="${tputGREEN}${numSelect}.,${tputnormal}${container},"
-			printf "%-4s %-25s \n" "${tputGREEN}${numSelect}." "${tputnormal}${container}"
+      ### Check if container is up-to-date ###
+      RepoUrl=$(docker inspect "$containerName" --format='{{.Config.Image}}')
+      LocalHash=$(docker image inspect "$RepoUrl" --format '{{.RepoDigests}}')
+      # Checking for errors while setting the variable:
+      if RegHash=$(~/regctl image digest --list "$RepoUrl" 2>&1) ; then
+        if [[ "$LocalHash" = *"$RegHash"* ]] ; then
+          # No UpdateNoUpdates+=("$i")
+          updateIcon="🔄"
+        else
+          #GotUpdates+=("$i")
+          updateIcon="✅"
+        fi
+      else
+        # Here the RegHash is the result of an error code.
+        GotErrors+=("$i - ${RegHash}")
+        updateIcon="⚠"
+      fi
+      ### ###
+			printContainers+="${tputGREEN}${numSelect}. ${updateIcon} ,${tputnormal}${container},"
+			printf "%-4s %-30s \n" "${tputGREEN}${numSelect}. ${updateIcon} " "${tputnormal}${container}"
 		fi
 	done | column | sed "s/^/$prefixtput /"
 
