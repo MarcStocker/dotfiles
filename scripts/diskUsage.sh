@@ -376,7 +376,9 @@ while getopts 'hdlrn:c:o:u:f:' flag; do
   case "${flag}" in
     h) echo "$(basename "$0") [-h] [-d/l] [-r] [-n #] [-c X] [-u X] [-f X] [-o string] 
   Options:
-    -d  MUST BE USED TO DISPLAY OUTPUT: If calling the script file directly (ex. ./$(basename "$0"), this will display output. Otherwise, use it as a function in another script)
+    -d  MUST BE USED TO DISPLAY OUTPUT WHEN CALLED FROM COMMAND LINE: 
+        If calling the script file directly from CommandLine (ex. ./$(basename "$0") -d)
+        Otherwise, use it as a function in another script (ex. diskUsage)
     -l  Same as -d option
 
     -h  Show this help dialog
