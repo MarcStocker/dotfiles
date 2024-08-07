@@ -1,4 +1,5 @@
 source ~/dotfiles/scripts/shellTextVariables.sh
+source ~/dotfiles/scripts/diskUsage.sh
 # ----------------------------------
 # Colors
 # ----------------------------------
@@ -283,7 +284,8 @@ raid_status () {
 harddrive () {
 	echo
   echo -e "${PURPLE} HDD Space.: ${NOCOLOR}"
-  ~/dotfiles/scripts/diskUsage.sh -n 2
+  #~/dotfiles/scripts/diskUsage.sh -n 2
+  storageDrives
 	## Which harddrives are we going to get data from?
 
 	##Filesystem      Size  Used Avail Use% Mounted on

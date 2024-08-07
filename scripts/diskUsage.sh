@@ -1,5 +1,5 @@
 #!/bin/bash
-source ~/dotfiles/scripts/shellTextVariables.sh
+#source ~/dotfiles/scripts/shellTextVariables.sh
 # ----------------------------------
 # Colors
 # ----------------------------------
@@ -49,14 +49,28 @@ LOADCURSOR="${TC}u"
 # Following the OS drive will be every other drive that doesn't come from the /etc folder,
 # and will be sorted by total size, smallest-largest. 
 #
-# The function harddrive() will accept 1 argument, and must be the strings "reverse" or "r".
-# Passing in these arguments will reverse the order to largest-smallest
+# The function harddrive() will accept any of the following options. Multiple may be used at once: 
+#  Options:
+#    -d  MUST BE USED TO DISPLAY OUTPUT WHEN CALLED FROM COMMAND LINE: If calling the script file directly (ex. ./diskUsage -d). 
+#        Otherwise, use it as a function in another script (ex. diskUsage)
+#    -l  Same as -d option
+#
+#    -h  Show help dialog
+#
+#    -o  How to order the drives. Avail options: free, used, avail, perc. (Default: avail)
+#    -r  Reverse order of drives 
+#
+#    -n  Set number of leading prefix characters/how much to indent final output (Default: 5)
+#    -c  Set the character to be used as the prefix character (Default: ' ')
+#
+#    -u Set UsedSpace Character in graphic (Default: '━')
+#    -f Set FreeSpace Character in graphic (Default: '━')"
 #
 # You can save hardcoded drives (the location where they should be mounted) as well. 
 # This will give you the "{Drive} is UNMOUNTED..." warning if it cannot be found. 
 # 
 #####################################################################################################
-# Example output (Real output will be colorized): 
+# Example CommandLine output (Real output will be colorized): 
 ##  user@machine:~/dotfiles/scripts$ ./diskUsage.sh list
 ##    Filesystems             Free    Used    Size   Used%
 ##    /(dev/sde1)              17G     66G     87G     80%
@@ -75,24 +89,60 @@ LOADCURSOR="${TC}u"
 ##    [━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━]
 ##    /mnt/raid5               16T     21T     39T     57%
 ##    [━━━━━━━━━━━━━━━━━━━━━━━━━━━━----------------------]
+# 
+# Example Function call and Output:
+#  CODE:
+##  source ~/scripts/diskUsage.sh
+##  echo "Displaying Disk Usage"
+##  storageDrives
+##
+##  echo "Displaying Disk Usage, and replacing display characters, and changing sort order"
+##  storageDrives -o free -u = -c _ 
+##
+#  OUTPUT: 
+##  Displaying Disk Usage
+##    Filesystems             Free    Used    Size   Used%
+##    /(dev/sde1)              17G     66G     87G     80%
+##    [━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━----------]
+##    /mnt/NanoDrive is UNMOUNTED...
+##    [xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]
+##    /mnt/ServerBackup        15G    202G    229G     94%
+##    [━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━---]
+##    /mnt/plexMetaData        15G    207G    234G     94%
+##    [━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━---]
+##    /mnt/One                211G    2.6T    2.8T     93%
+##    [━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━----]
+##    /mnt/TriceriBytes        12G    2.8T    2.8T    100%
+##    [━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━]
+##    /mnt/FatTerry            91G    9.1T    9.1T    100%
+##    [━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━]
+##    /mnt/raid5               16T     21T     39T     57%
+##    [━━━━━━━━━━━━━━━━━━━━━━━━━━━━----------------------]
+##  
+##  Displaying Disk Usage, and replacing display characters, and changing sort order
+##    Filesystems             Free    Used    Size   Used%
+##    /(dev/sde1)              17G     66G     87G     80%
+##    [========================================__________]
+##    /mnt/NanoDrive is UNMOUNTED...
+##    [xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]
+##    /mnt/TriceriBytes        12G    2.8T    2.8T    100%
+##    [==================================================]
+##    /mnt/ServerBackup        15G    202G    229G     94%
+##    [===============================================___]
+##    /mnt/plexMetaData        15G    207G    234G     94%
+##    [===============================================___]
+##    /mnt/FatTerry            91G    9.1T    9.1T    100%
+##    [==================================================]
+##    /mnt/One                211G    2.6T    2.8T     93%
+##    [===============================================___]
+##    /mnt/raid5               16T     21T     39T     57%
+##    [============================______________________]
+##  
+##  
+##  
+##  
 #####################################################################################################
-#
-# Note: If you want to change the indent spacing, just change the variable "indentNum" 
-#       Or replace the indent spaces with another character by changing "indentChar"
-#
 #####################################################################################################
-
-# Accepts 4 arguments:
-# 1. "Reverse" flag to reverse harddrive order based on total size. Either "Reverse" or "r".
-#    (Pass in anything else in order to use args 2 and 3)
-#     -r
-# 2. Num of Indention spaces
-#    (Pass in any non-number in order to use arg 3 without changing the default arg 2)
-#     -n
-# 3. Change Indention character
-#     -c
-# 4. Order. Default is Total Disk Space. Other options; Size, Used, Avail, Perc.
-#     -o
 
 storageDrives () { 
   fReverse=''
