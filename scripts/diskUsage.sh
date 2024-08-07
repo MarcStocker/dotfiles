@@ -159,7 +159,8 @@ storageDrives () {
       c) indentChar="${OPTARG}" ;;
       u) usedSpaceChar="${OPTARG}" ;;
       f) freeSpaceChar="${OPTARG}" ;;
-      o) echo -e "order flag: -$flag ${OPTARG}";order="${OPTARG}" ;;
+      o) #echo -e "order flag: -$flag ${OPTARG}";
+          order="${OPTARG}" ;;
       *) echo -e "${ORANGE}BAD ARUGMENT: ${NOCOLOR}-${flag} ${OPTARG}" 
          exit 1 ;;
     esac
