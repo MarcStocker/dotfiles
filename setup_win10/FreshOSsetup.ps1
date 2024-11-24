@@ -527,10 +527,50 @@ function Format-StringInTemplate {
 }
 
 function signInOptions {
+    Clear-Host
     Format-StringInTemplate "Sign in Options"
-    Write-Host "Please use the Pop up window to set Sign in Options"
 
-    Start-Process "ms-settings:signinoptions"
+    # Display menu options
+    #Write-Host $templateLine -ForegroundColor Green
+    #Write-Host "$shortLine" -ForegroundColor Green -NoNewline
+    #$ComputerName = Get-ItemPropertyValue -Path "Registry::HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\ComputerName\ComputerName" -Name "ComputerName"
+
+    $options = @(
+        "Open Windows Sign in Options SETTINGS Window",
+        "ENABLE PASSWORDLESS LOGIN as an option",
+        "Open (netplwiz) settings to ENABLE Passwordless Login "
+    )
+    # Display menu options
+    Write-Host "Select an option:"
+    for ($i = 0; $i -lt $options.Count; $i++) {
+        Write-Host "$($i + 1). " -ForegroundColor Green -NoNewLine
+        Write-Host "$($options[$i])"
+    }
+    Write-Host ""
+    Write-Host "X. " -ForegroundColor Green -NoNewLine
+    Write-Host "Back to Main Menu"
+    # Prompt for user input
+    $userInput = Read-Host "Select"
+    # Parse the user input as an integer
+    $selectedOption = [int]$userInput
+    Clear-Host
+    # Execute the selected function based on the user input
+    switch ($selectedOption) {
+        1 { 
+            Start-Process "ms-settings:signinoptions" 
+            signinOptions
+        }
+        2 { 
+            New-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\PasswordLess\Device" -Name DevicePasswordLessBuildVersion -Value 0 -Type Dword -Force
+            signinOptions
+        }
+        3 { 
+            netplwiz  
+            signinOptions
+        }
+        default { Write-Host "Invalid option. Please select a valid option." -ForegroundColor Red }
+    }
+
 }
 
 function enableWindowsFeatures {
