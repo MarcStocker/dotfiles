@@ -6,18 +6,26 @@ $allProgramsFilename        = ".allPrograms.txt"
 $selectedProgramsFilename   = ".selectedPrograms.txt"
 $configFilename             = ".config.json"
 
-# Primary Save files (Local Folder)
-$allProgramsFilePath            = Join-Path -Path $scriptFolderPath -ChildPath $allProgramsFilename
-$selectedProgramsFilePath       = Join-Path -Path $scriptFolderPath -ChildPath $selectedProgramsFilename
-$configFilePath                 = Join-Path -Path $scriptFolderPath -ChildPath $configFilename
 
 # APPDATA Backup Save Folder
 $userProfileFolder              = [System.Environment]::GetFolderPath([System.Environment+SpecialFolder]::UserProfile)
-$relativeScriptPath             = "AppData\Local\MARCS_FRESH_OS_PS_SCRIPT\"
-$backupSaveFolder               = Join-Path -Path $userProfileFolder -ChildPath $relativeScriptPath
+$appDataFolder                  = "AppData\Local\MARCS_FRESH_OS_PS_SCRIPT\"
+$backupSaveFolder               = Join-Path -Path $userProfileFolder -ChildPath $appDataFolder
 $allProgramsFilePathBackup      = Join-Path -Path $backupSaveFolder -ChildPath $AllProgramsFilename
 $selectedProgramsFilePathBackup = Join-Path -Path $backupSaveFolder -ChildPath $selectedProgramsFilename
-$configFilePathBackup           = Join-Path -Path $scriptFolderPath -ChildPath $configFilename
+
+# Primary Save files (Local Folder)
+if (-not $scriptFolderPath ) { # If run from irm web.site | iex
+    $allProgramsFilePath            = Join-Path -Path $appDataFolder -ChildPath $allProgramsFilename
+    $selectedProgramsFilePath       = Join-Path -Path $appDataFolder -ChildPath $selectedProgramsFilename
+    $configFilePath                 = Join-Path -Path $appDataFolder -ChildPath $configFilename
+    $configFilePathBackup           = Join-Path -Path $appDataFolder -ChildPath $configFilename
+} else { # If Run Locally
+    $allProgramsFilePath            = Join-Path -Path $scriptFolderPath -ChildPath $allProgramsFilename
+    $selectedProgramsFilePath       = Join-Path -Path $scriptFolderPath -ChildPath $selectedProgramsFilename
+    $configFilePath                 = Join-Path -Path $scriptFolderPath -ChildPath $configFilename
+    $configFilePathBackup           = Join-Path -Path $scriptFolderPath -ChildPath $configFilename
+}
 
 # Create APPDATA Folders 
 if (-not (Test-Path -Path $backupSaveFolder -PathType Container)) {
@@ -1398,7 +1406,7 @@ $options = @(
     "Backup: Start Menu Layout"
     "Backup: All Current System Settings"
     "LAUNCH: ChrisTitusTech WinUtil"
-    "LAUNCH: MASgrave Windows Activation Tool"
+    "LAUNCH: MASGrave Windows Activation Tool"
 )
 
 while ($true) {
