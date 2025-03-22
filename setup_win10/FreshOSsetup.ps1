@@ -1451,7 +1451,7 @@ while ($true) {
         3 { backupStartMenu }
         4 { backupAllSettings }
         5 { irm https://christitus.com/win | iex }
-        5 { irm https://get.activated.win  | iex }
+        6 { irm https://get.activated.win  | iex }
         0 { test }
         default { Write-Host "Invalid option. Please select a valid option." -ForegroundColor Red }
     }
