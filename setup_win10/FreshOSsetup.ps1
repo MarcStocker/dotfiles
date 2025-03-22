@@ -4,20 +4,20 @@ $scriptFolderPath = $PSScriptRoot
 # Filenames
 $allProgramsFilename        = ".allPrograms.txt"
 $selectedProgramsFilename   = ".selectedPrograms.txt"
-$configFilename    = ".config.json"
+$configFilename             = ".config.json"
 
 # Primary Save files (Local Folder)
 $allProgramsFilePath            = Join-Path -Path $scriptFolderPath -ChildPath $allProgramsFilename
 $selectedProgramsFilePath       = Join-Path -Path $scriptFolderPath -ChildPath $selectedProgramsFilename
-$configFilePath        = Join-Path -Path $scriptFolderPath -ChildPath $configFilename
+$configFilePath                 = Join-Path -Path $scriptFolderPath -ChildPath $configFilename
 
 # APPDATA Backup Save Folder
-$userProfileFolder = [System.Environment]::GetFolderPath([System.Environment+SpecialFolder]::UserProfile)
-$relativeScriptPath = "AppData\Local\MARCS_FRESH_OS_PS_SCRIPT\"
-$backupSaveFolder   = Join-Path -Path $userProfileFolder -ChildPath $relativeScriptPath
+$userProfileFolder              = [System.Environment]::GetFolderPath([System.Environment+SpecialFolder]::UserProfile)
+$relativeScriptPath             = "AppData\Local\MARCS_FRESH_OS_PS_SCRIPT\"
+$backupSaveFolder               = Join-Path -Path $userProfileFolder -ChildPath $relativeScriptPath
 $allProgramsFilePathBackup      = Join-Path -Path $backupSaveFolder -ChildPath $AllProgramsFilename
 $selectedProgramsFilePathBackup = Join-Path -Path $backupSaveFolder -ChildPath $selectedProgramsFilename
-$configFilePathBackup  = Join-Path -Path $scriptFolderPath -ChildPath $configFilename
+$configFilePathBackup           = Join-Path -Path $scriptFolderPath -ChildPath $configFilename
 
 # Create APPDATA Folders 
 if (-not (Test-Path -Path $backupSaveFolder -PathType Container)) {
@@ -637,15 +637,46 @@ function enableWindowsFeatures {
 
 function backupStartMenu {
     Format-StringInTemplate "Back and Import Start Menu Layout"
-
-    if (Get-YesNoInput "Do you want to backup your Start Menu?") {
-        $documentsFolder = Join-Path $env:USERPROFILE "Documents"
-        export-startlayout -path "$documentsFolder\startMenuBackup.xml"
-    } else {
-        return
+    
+    $options = @(
+        "Backup Start Menu",
+        "Restore Start Menu Backup"
+    )
+    
+    # Display menu options
+    Write-Host "Select an option:"
+    for ($i = 0; $i -lt $options.Count; $i++) {
+        Write-Host "$($i + 1). " -ForegroundColor Green -NoNewLine
+        Write-Host "$($options[$i])"
     }
-    Write-Host "COMPLETE: You should now have a file named 'StartMenuBackup.xml' in your documents folder"
-    $stringText= @"
+    Write-Host "X. " -ForegroundColor Green -NoNewLine
+    Write-Host "Exit"
+    Write-Host ""
+    # Prompt for user input
+    $userInput = Read-Host "Select"
+    # Exit the loop if the user enters 'x'
+    if      ($userInput -eq $exitKey) { return }
+    elseif  ($userInput -eq "") { return }
+    # Parse the user input as an integer
+        $selectedOption = [int]$userInput
+    # Execute the selected function based on the user input
+    switch ($selectedOption) {
+        1 {  
+            $documentsFolder = Join-Path $env:USERPROFILE "Documents"
+            export-startlayout -path "$documentsFolder\startMenuBackup.xml"
+            export-startlayout -path "$backupSaveFolder\startMenuBackup.xml"
+            Write-Host "COMPLETE: You should now have a file named 'StartMenuBackup.xml' in the following folder:"
+            Write-Host -ForegroundColor Black -BackgroundColor Green "$backupSaveFolder\StartMenuBackup.xml"
+            Write-Host "and: "
+            Write-Host -ForegroundColor Black -BackgroundColor Green "$env:USERPROFILE\Documents\StartMenuBackup.xml"
+            Write-Host ""
+            Write-Host 
+            EnterToContinue
+            return
+        }
+        2 { 
+            gpedit.msc
+            $stringText= @"
 ==============================================
 ==== RESTORE OLD START MENU CONFIGURATION ====
 ==============================================
@@ -661,7 +692,7 @@ User Configuration > Administrative Templates > Start Menu and Taskbar > Start L
 
 Step 3: 
 Check 'Enabled' 
-Plug in File Path to the .xml backup (D:\Configuration stuff\Win10StartMenu\startMenuBackup.xml)
+Plug in File Path to the .xml backup ($backupSaveFolder`StartMenuBackup.xml)
 
 Step 4:
 Apply changes, and reboot PC. 
@@ -672,6 +703,12 @@ The Start Menu should now be locked due to the changes we made. To unlock the St
 "@
 
     Write-Host $stringText -ForegroundColor Yellow
+    EnterToContinue
+    Write-Host ""
+        }
+        default { Write-Host "Invalid option. Please select a valid option." -ForegroundColor Red }
+    }
+    
 }
 
 function backupAllSettings {
