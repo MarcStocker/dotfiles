@@ -1,0 +1,298 @@
+{
+    "WPFTweaks":  [
+                      "WPFTweaksRestorePoint",
+                      "WPFTweaksEndTaskOnTaskbar",
+                      "WPFTweaksDeleteTempFiles",
+                      "WPFTweaksPowershell7Tele",
+                      "WPFTweaksAH",
+                      "WPFTweaksServices",
+                      "WPFTweaksConsumerFeatures",
+                      "WPFTweaksWifi",
+                      "WPFTweaksTele",
+                      "WPFTweaksHiber",
+                      "WPFTweaksHome",
+                      "WPFTweaksDiskCleanup",
+                      "WPFTweaksLoc",
+                      "WPFTweaksDVR",
+                      "WPFTweaksStorage"
+                  ],
+    "Install":  [
+                    {
+                        "winget":  "GOG.Galaxy",
+                        "choco":  "goggalaxy"
+                    },
+                    {
+                        "winget":  "TeamViewer.TeamViewer",
+                        "choco":  "teamviewer9"
+                    },
+                    {
+                        "winget":  "Vencord.Vesktop",
+                        "choco":  "na"
+                    },
+                    {
+                        "winget":  "REALiX.HWiNFO",
+                        "choco":  "hwinfo"
+                    },
+                    {
+                        "winget":  "AutoHotkey.AutoHotkey",
+                        "choco":  "autohotkey"
+                    },
+                    {
+                        "winget":  "CodecGuide.K-LiteCodecPack.Standard",
+                        "choco":  "k-litecodecpack-standard"
+                    },
+                    {
+                        "winget":  "Microsoft.VisualStudioCode",
+                        "choco":  "vscode"
+                    },
+                    {
+                        "winget":  "WinSCP.WinSCP",
+                        "choco":  "winscp"
+                    },
+                    {
+                        "winget":  "WireGuard.WireGuard",
+                        "choco":  "wireguard"
+                    },
+                    {
+                        "winget":  "7zip.7zip",
+                        "choco":  "7zip"
+                    },
+                    {
+                        "winget":  "CrystalDewWorld.CrystalDiskInfo",
+                        "choco":  "crystaldiskinfo"
+                    },
+                    {
+                        "winget":  "Obsidian.Obsidian",
+                        "choco":  "obsidian"
+                    },
+                    {
+                        "winget":  "CPUID.HWMonitor",
+                        "choco":  "hwmonitor"
+                    },
+                    {
+                        "winget":  "CrystalDewWorld.CrystalDiskMark",
+                        "choco":  "crystaldiskmark"
+                    },
+                    {
+                        "winget":  "Dropbox.Dropbox",
+                        "choco":  "na"
+                    },
+                    {
+                        "winget":  "TechPowerUp.GPU-Z",
+                        "choco":  "gpu-z"
+                    },
+                    {
+                        "winget":  "flux.flux",
+                        "choco":  "flux"
+                    },
+                    {
+                        "winget":  "Armin2208.WindowsAutoNightMode",
+                        "choco":  "auto-dark-mode"
+                    },
+                    {
+                        "winget":  "Discord.Discord",
+                        "choco":  "discord"
+                    },
+                    {
+                        "winget":  "dotPDN.PaintDotNet",
+                        "choco":  "paint.net"
+                    },
+                    {
+                        "winget":  "File-New-Project.EarTrumpet",
+                        "choco":  "eartrumpet"
+                    },
+                    {
+                        "winget":  "qBittorrent.qBittorrent",
+                        "choco":  "qbittorrent"
+                    },
+                    {
+                        "winget":  "Microsoft.WindowsTerminal",
+                        "choco":  "microsoft-windows-terminal"
+                    },
+                    {
+                        "winget":  "EpicGames.EpicGamesLauncher",
+                        "choco":  "epicgameslauncher"
+                    },
+                    {
+                        "winget":  "Bitwarden.Bitwarden",
+                        "choco":  "bitwarden"
+                    },
+                    {
+                        "winget":  "CPUID.CPU-Z",
+                        "choco":  "cpu-z"
+                    },
+                    {
+                        "winget":  "Ventoy.Ventoy",
+                        "choco":  "ventoy"
+                    },
+                    {
+                        "winget":  "SublimeHQ.SublimeText.4",
+                        "choco":  "sublimetext4"
+                    },
+                    {
+                        "winget":  "Microsoft.PowerToys",
+                        "choco":  "powertoys"
+                    },
+                    {
+                        "winget":  "BlenderFoundation.Blender",
+                        "choco":  "blender"
+                    },
+                    {
+                        "winget":  "Microsoft.WindowsPCHealthCheck",
+                        "choco":  "na"
+                    },
+                    {
+                        "winget":  "Valve.Steam",
+                        "choco":  "steam-client"
+                    },
+                    {
+                        "winget":  "Mozilla.Firefox",
+                        "choco":  "firefox"
+                    },
+                    {
+                        "winget":  "Git.Git",
+                        "choco":  "git"
+                    },
+                    {
+                        "winget":  "Microsoft.OneDrive",
+                        "choco":  "onedrive"
+                    },
+                    {
+                        "winget":  "Plex.Plex",
+                        "choco":  "plex"
+                    },
+                    {
+                        "winget":  "Notepad++.Notepad++",
+                        "choco":  "notepadplusplus"
+                    },
+                    {
+                        "winget":  "VideoLAN.VLC",
+                        "choco":  "vlc"
+                    },
+                    {
+                        "winget":  "Foxit.FoxitReader",
+                        "choco":  "foxitreader"
+                    },
+                    {
+                        "winget":  "Vivaldi.Vivaldi",
+                        "choco":  "vivaldi"
+                    },
+                    {
+                        "winget":  "Google.Chrome",
+                        "choco":  "googlechrome"
+                    },
+                    {
+                        "winget":  "Balena.Etcher",
+                        "choco":  "etcher"
+                    },
+                    {
+                        "winget":  "CodeSector.TeraCopy",
+                        "choco":  "TeraCopy"
+                    },
+                    {
+                        "winget":  "Rem0o.FanControl",
+                        "choco":  "na"
+                    },
+                    {
+                        "winget":  "Spotify.Spotify",
+                        "choco":  "spotify"
+                    },
+                    {
+                        "winget":  "Microsoft.Sysinternals.ProcessMonitor",
+                        "choco":  "procexp"
+                    },
+                    {
+                        "winget":  "Python.Python.3.12",
+                        "choco":  "python"
+                    },
+                    {
+                        "winget":  "Audacity.Audacity",
+                        "choco":  "audacity"
+                    },
+                    {
+                        "winget":  "Nvidia.GeForceNow",
+                        "choco":  "nvidia-geforce-now"
+                    },
+                    {
+                        "winget":  "Sandboxie.Plus",
+                        "choco":  "sandboxie"
+                    },
+                    {
+                        "winget":  "Microsoft.Edge",
+                        "choco":  "microsoft-edge"
+                    },
+                    {
+                        "winget":  "RaspberryPiFoundation.RaspberryPiImager",
+                        "choco":  "rpi-imager"
+                    },
+                    {
+                        "winget":  "Jellyfin.JellyfinMediaPlayer",
+                        "choco":  "jellyfin-media-player"
+                    },
+                    {
+                        "winget":  "AntibodySoftware.WizTree",
+                        "choco":  "wiztree"
+                    }
+                ],
+    "WPFInstall":  [
+                       "WPFInstallgog",
+                       "WPFInstallteamviewer",
+                       "WPFInstallvesktop",
+                       "WPFInstallhwinfo",
+                       "WPFInstallautohotkey",
+                       "WPFInstallklite",
+                       "WPFInstallvscode",
+                       "WPFInstallwinscp",
+                       "WPFInstallwireguard",
+                       "WPFInstall7zip",
+                       "WPFInstallcrystaldiskinfo",
+                       "WPFInstallobsidian",
+                       "WPFInstallhwmonitor",
+                       "WPFInstallcrystaldiskmark",
+                       "WPFInstalldropox",
+                       "WPFInstallgpuz",
+                       "WPFInstallflux",
+                       "WPFInstallautodarkmode",
+                       "WPFInstalldiscord",
+                       "WPFInstallPaintdotnet",
+                       "WPFInstalleartrumpet",
+                       "WPFInstallqbittorrent",
+                       "WPFInstallterminal",
+                       "WPFInstallepicgames",
+                       "WPFInstallbitwarden",
+                       "WPFInstallcpuz",
+                       "WPFInstallventoy",
+                       "WPFInstallsublimetext",
+                       "WPFInstallpowertoys",
+                       "WPFInstallblender",
+                       "WPFInstallwindowspchealth",
+                       "WPFInstallsteam",
+                       "WPFInstallfirefox",
+                       "WPFInstallgit",
+                       "WPFInstallonedrive",
+                       "WPFInstallplexdesktop",
+                       "WPFInstallnotepadplus",
+                       "WPFInstallvlc",
+                       "WPFInstallfoxpdfreader",
+                       "WPFInstallvivaldi",
+                       "WPFInstallchrome",
+                       "WPFInstalletcher",
+                       "WPFInstallTeraCopy",
+                       "WPFInstallfancontrol",
+                       "WPFInstallspotify",
+                       "WPFInstallprocessmonitor",
+                       "WPFInstallpython3",
+                       "WPFInstallaudacity",
+                       "WPFInstallgeforcenow",
+                       "WPFInstallsandboxie",
+                       "WPFInstalledge",
+                       "WPFInstallpiimager",
+                       "WPFInstalljellyfinmediaplayer",
+                       "WPFInstallwiztree"
+                   ],
+    "WPFFeature":  [
+                       "WPFFeaturesSandbox",
+                       "WPFFeaturewsl",
+                       "WPFFeatureshyperv"
+                   ]
+}
