@@ -1452,7 +1452,11 @@ while ($true) {
         4 { backupAllSettings }
         5 { irm https://christitus.com/win | iex }
         6 { irm https://get.activated.win  | iex }
-        0 { test }
+        0 { 
+            $userInput = Read-Host "Run Single Commmand (or `"test`" for test method)"
+            Invoke-Expression $userInput
+            EnterToContinue
+        }
         default { Write-Host "Invalid option. Please select a valid option." -ForegroundColor Red }
     }
     #EnterToContinue
