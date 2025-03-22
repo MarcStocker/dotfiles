@@ -1398,6 +1398,7 @@ $options = @(
     "Backup: Start Menu Layout"
     "Backup: All Current System Settings"
     "LAUNCH: ChrisTitusTech WinUtil"
+    "LAUNCH: MASgrave Windows Activation Tool"
 )
 
 while ($true) {
@@ -1450,6 +1451,7 @@ while ($true) {
         3 { backupStartMenu }
         4 { backupAllSettings }
         5 { irm https://christitus.com/win | iex }
+        5 { irm https://get.activated.win  | iex }
         0 { test }
         default { Write-Host "Invalid option. Please select a valid option." -ForegroundColor Red }
     }
