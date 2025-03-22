@@ -898,28 +898,17 @@ function Manage-PowerPlans {
 function mouseSettings {
     Format-StringInTemplate "Disable Mouse Acceleration"
 
-    Write-Host "Mouse Acceleration has been disabled."
-    Start-Sleep -Seconds 1
-    Write-Host "Do not ask me to turn it back on... I won't."
-    Start-Sleep -Seconds 2
-    Write-Host ""
-    Write-Host "Seriously, you don't want it. "
-    Start-Sleep -Seconds 2
-    Write-Host "If you really want to though, you can change it yourself..."
-    Start-Sleep -Seconds 1
-    Write-Host "But don't do it."
-    Start-Sleep -Seconds 2
-
-    control mouse
-
+    Write-Host "Mouse Acceleration SHOULD be disabled."
     Write-Host ""
     Write-Host "Mouse Acceleration (Enhance Point Precision) has been turned OFF. " -BackgroundColor Green -ForegroundColor Black
     Write-Host "This change will take effect after Logging off and back on" -BackgroundColor Green -ForegroundColor Black
-
     # Disable Mouse Accerlation
     Set-ItemProperty -Path "HKCU:\Control Panel\Mouse" -Name MouseSpeed -Value 0
     # Enable Mouse Accerlation
     #Set-ItemProperty -Path "HKCU:\Control Panel\Mouse" -Name MouseSpeed -Value 1
+    Start-Sleep -Seconds 2
+
+    control mouse
     EnterToContinue
 }
 
