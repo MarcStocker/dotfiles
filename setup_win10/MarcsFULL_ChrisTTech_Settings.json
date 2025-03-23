@@ -154,10 +154,6 @@
                         "choco":  "git"
                     },
                     {
-                        "winget":  "Microsoft.OneDrive",
-                        "choco":  "onedrive"
-                    },
-                    {
                         "winget":  "Plex.Plex",
                         "choco":  "plex"
                     },
@@ -269,7 +265,6 @@
                        "WPFInstallsteam",
                        "WPFInstallfirefox",
                        "WPFInstallgit",
-                       "WPFInstallonedrive",
                        "WPFInstallplexdesktop",
                        "WPFInstallnotepadplus",
                        "WPFInstallvlc",
