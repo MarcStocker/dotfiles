@@ -1417,6 +1417,11 @@ while ($true) {
         }
     }
     Write-Host ""
+    Write-Host "7." -ForegroundColor Green  -NoNewLine
+    Write-Host " DOWNLOAD: Marc's ChrisTTech FULL Settings"
+    Write-Host "8." -ForegroundColor Green -NoNewLine
+    Write-Host " DOWNLOAD: Marc's ChrisTTech Standard Settings"
+    Write-Host ""
     Write-Host "dd. " -Foregroundcolor Red -NoNewLine; Write-Host "Script Cleanup " -NoNewLine
     Write-Host "(Delete All files/folders/settings produced by this script.)" -BackgroundColor DarkGray
     Write-Host ""
@@ -1449,10 +1454,27 @@ while ($true) {
         4 { backupAllSettings }
         5 { irm https://christitus.com/win | iex }
         6 { irm https://get.activated.win  | iex }
+        7 {
+            $fileDestination = "$env:USERPROFILE\Desktop\MarcsFULL_ChrisTTech_Settings.json"
+            $downloadFile = "https://raw.githubusercontent.com/MarcStocker/dotfiles/refs/heads/main/setup_win10/MarcsFULL_ChrisTTech_Settings.json"
+            iwr -Uri $downloadFile -OutFile $fileDestination
+            Write-Host ".json Config file has been downloaded to: " 
+            Write-Host "$fileDestination" -Foregroundcolor Black -BackgroundColor Green
+            EnterToContinue
+        }
+        8 {
+            $fileDestination = "$env:USERPROFILE\Desktop\MarcsFULL_ChrisTTech_Settings.json"
+            $downloadFile = "https://raw.githubusercontent.com/MarcStocker/dotfiles/refs/heads/main/setup_win10/MarcsSTANDARD_ChrisTTech_Settings.json"
+            iwr -Uri $downloadFile -OutFile $fileDestination
+            Write-Host ".json Config file has been downloaded to: " 
+            Write-Host "$fileDestination" -Foregroundcolor Black -BackgroundColor Green
+            EnterToContinue
+        }
         0 { 
             $userInput = Read-Host "Run Single Commmand (or `"test`" for test method)"
             Invoke-Expression $userInput
             EnterToContinue
+                #test 
         }
         default { Write-Host "Invalid option. Please select a valid option." -ForegroundColor Red }
     }
