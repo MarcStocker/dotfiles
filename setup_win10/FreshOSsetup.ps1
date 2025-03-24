@@ -1064,6 +1064,7 @@ function dialogPrograms {
         "Install/Update Programs",
         "List Programs/Select Programs to Install"
         "Change Default Install Location"
+        "Install DIY Software/Drivers"
         #"Chocolatey: Add/Remove Programs from ALL list"
     )
     while ($true) {
@@ -1137,6 +1138,7 @@ function dialogPrograms {
             2 { Install-Programs -chocoPrograms $global:ChocoPrograms }
             3 { Print-ChocolateyProgramsList -ChocoPrograms $global:ChocoPrograms -AllChocoPrograms $AllChocoPrograms }
             4 { Set-ChocolateyInstallDirectory }
+            5 { URLDriversANDSoftware }
             default { Write-Host "Invalid option. Please select a valid option." -ForegroundColor Red }
         }
         #EnterToContinue
@@ -1327,6 +1329,69 @@ In that case, look at the backup file for the original PATH values in '$backupFi
     }
 
     EnterToContinue
+}
+
+function URLDriversANDSoftware {
+    while($true){
+        Clear-Host
+        Format-StringInTemplate "Various Software and Driver Downloads"
+        
+        $options = @(
+            "SOFTWARE: Steam"
+            "SOFTWARE: GeForce NVIDIA App"
+            "SOFTWARE: Fusion 360"
+            "SOFTWARE: Bambu Lab Studio"
+            "DRIVERS: ESPHome CP2102 (For plugging in ESP32s via USB)"
+            "WEB INSTALL: ESPHome BLTProxy, Voice Assistant, Media Player"
+            "WEB INSTALL: WLED"
+        )
+        
+        # Display menu options
+        Write-Host "Select something to open in your browser/download:"
+        for ($i = 0; $i -lt $options.Count; $i++) {
+            Write-Host "$($i + 1). " -ForegroundColor Green -NoNewLine
+            Write-Host "$($options[$i])"
+        }
+        Write-Host "X. " -ForegroundColor Green -NoNewLine
+        Write-Host "Exit"
+        Write-Host ""
+        # Prompt for user input
+        $userInput = Read-Host "Select"
+        # Exit the loop if the user enters 'x'
+        if      ($userInput -eq $exitKey) { return }
+        elseif  ($userInput -eq "") { return }
+        # Parse the user input as an integer
+            $selectedOption = [int]$userInput
+        # Execute the selected function based on the user input
+        switch ($selectedOption) {
+            1 { Start-Process "https://store.steampowered.com/about/" }
+            2 { Start-Process "https://www.nvidia.com/en-us/software/nvidia-app/" }
+            3 { Start-Process "https://www.autodesk.com/products/fusion-360/appstream" }
+            4 { Start-Process "https://bambulab.com/en/download/studio" }
+            5 { 
+                Write-Host "1. Go to the " -NoNewLine; Write-Host "DOWNLOADS" -BackgroundColor Green -ForeGroundColor Black -NoNewLine; Write-Host " Tab, and download " -NoNewLine; Write-Host "CP210x UNIVERSAL WINDOWS DRIVER" -BackgroundColor Green -ForeGroundColor Black
+                Write-Host "2. Unzip the downloaded file, right click " -NoNewLine; Write-Host "silabser.inf" -BackgroundColor Green -ForeGroundColor Black -NoNewLine; Write-Host " and Install"
+                Write-Host "3. Now you can plug an ESP device into your computer, and install ESPHome, or WLED through a browser (but it basically has to be chrome.)"
+                EnterToContinue
+                Start-Process "https://www.silabs.com/developer-tools/usb-to-uart-bridge-vcp-drivers" 
+                EnterToContinue
+            }
+            6 { 
+                Write-Host "Please make sure you try to install software on ESP's in " -NoNewLine; Write-Host "CHROME OR EDGE ONLY" -BackgroundColor Red -ForeGroundColor White -NoNewLine; Write-Host ", and via an HTTPS page."
+                Write-Host "Sorry... but other browsers just plain do not support it."
+                EnterToContinue
+                Start-Process msedge "https://esphome.io/projects/?type=bluetooth" 
+            }
+            7 { 
+                Write-Host "Please make sure you try to install software on ESP's in " -NoNewLine; Write-Host "CHROME OR EDGE ONLY" -BackgroundColor Red -ForeGroundColor White -NoNewLine; Write-Host ", and via an HTTPS page."
+                Write-Host "Sorry... but other browsers just plain do not support it."
+                EnterToContinue
+                Start-Process msedge "https://install.wled.me/" 
+            }
+            default { Write-Host "Invalid option. Please select a valid option." -ForegroundColor Red }
+        }
+    }
+    
 }
 
 
