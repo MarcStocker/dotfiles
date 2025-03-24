@@ -1344,6 +1344,7 @@ function URLDriversANDSoftware {
             "DRIVERS: ESPHome CP2102 (For plugging in ESP32s via USB)"
             "WEB INSTALL: ESPHome BLTProxy, Voice Assistant, Media Player"
             "WEB INSTALL: WLED"
+            "AHK SCRIPTS: Download Marc's AHK Master Script"
         )
         
         # Display menu options
@@ -1388,6 +1389,20 @@ function URLDriversANDSoftware {
                 EnterToContinue
                 Start-Process msedge "https://install.wled.me/" 
             }
+            8 {
+                $startupDestination   = "C:\ProgramData\Microsoft\Windows\Start Menu\Programs\StartUp"
+                $downloadsDestination = "$env:USERPROFILE\Downloads"
+                $downloadFile = "https://raw.githubusercontent.com/MarcStocker/AutoHotkey/refs/heads/master/Marcs_Master_AHK_List.ahk"
+                iwr -Uri $downloadFile -OutFile $downloadsDestination\Marcs_Master_AHK_List.ahk
+                Write-Host "AHK Master Script downloaded to:" 
+                Write-Host "$downloadsDestination" -Foregroundcolor Black -BackgroundColor Green
+                Invoke-Item $startupDestination
+                Invoke-Item $downloadsDestination
+                Write-Host ""
+                Write-Host "Please place in the STARTUP folder to ensure it runs after login." 
+                EnterToContinue
+            }
+
             default { Write-Host "Invalid option. Please select a valid option." -ForegroundColor Red }
         }
     }
