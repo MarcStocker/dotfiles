@@ -1364,8 +1364,14 @@ function URLDriversANDSoftware {
         # Parse the user input as an integer
             $selectedOption = [int]$userInput
         # Execute the selected function based on the user input
-        switch ($selectedOption) {
-            1 { Start-Process "https://store.steampowered.com/about/" }
+        switch ($selectedOption) {            
+            1 { 
+                #Start-Process "https://store.steampowered.com/about/" 
+                $downloadsDestination = "$env:USERPROFILE\Downloads\"
+                $downloadFile = "https://cdn.akamai.steamstatic.com/client/installer/SteamSetup.exe"
+                Invoke-WebRequest $downloadFile -OutFile "$downloadsDestination\SteamSetup.exe"
+                Invoke-Item $downloadsDestination
+            }
             2 { Start-Process "https://www.nvidia.com/en-us/software/nvidia-app/" }
             3 { Start-Process "https://www.autodesk.com/products/fusion-360/appstream" }
             4 { Start-Process "https://bambulab.com/en/download/studio" }
