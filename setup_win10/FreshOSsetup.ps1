@@ -994,6 +994,22 @@ function dialogSystem {
         }
         $powerPlan = (Get-CimInstance -Namespace "Root\cimv2\power" -ClassName Win32_PowerPlan | Where-Object { $_.IsActive }).ElementName
         $workgroupDomain = (Get-WmiObject -Class Win32_ComputerSystem).Domain
+        $RDPstatus = Get-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Terminal Server" -Name fDenyTSConnections | Select-Object -ExpandProperty fDenyTSConnections
+        if ($RDPstatus -eq 0) {
+            $RDPstatus = "Enabled"
+            $RDPforeground = "GREEN"
+        } else {
+            $RDPstatus = "Disabled"
+            $RDPforeground = "YELLOW"
+        }
+        $mouseAccl = Get-ItemProperty -Path 'HKCU:\Control Panel\Mouse'
+        if ($mouseAccl.MouseSpeed -eq '1') {
+            $mouseAccl = "Enabled"
+            $mouseAcclForeground = "RED"
+        } else {
+            $mouseAccl = "Disabled"
+            $mouseAcclForeground = "GREEN"
+        }
 
 
         Write-Host "Comp Name:  " -ForegroundColor Cyan -NoNewLine
@@ -1006,6 +1022,10 @@ function dialogSystem {
         Write-Host "$currentTheme" -ForegroundColor Yellow 
         Write-Host "Power Plan: " -ForegroundColor Cyan -NoNewLine
         Write-Host "$powerPlan" -ForegroundColor Yellow 
+        Write-Host "RDP:        " -ForegroundColor Cyan -NoNewLine
+        Write-Host "$RDPstatus" -ForegroundColor $RDPforeground
+        Write-Host "Mouse Accl: " -ForegroundColor Cyan -NoNewLine
+        Write-Host "$mouseAccl" -ForegroundColor $mouseAcclForeground
 
 
         Write-Host ""
